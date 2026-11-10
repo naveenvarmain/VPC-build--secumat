@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="ZF logo">
+  <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="5"/>
+  <g fill="#ffffff">
+    <path d="M25 34 H52 V41 L35 59 H52 V66 H25 V59 L42 41 H25 Z"/>
+    <path d="M57 34 H75 V41 H65 V47 H73 V54 H65 V66 H57 Z"/>
+  </g>
+</svg>

@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OT Platform — Security Operations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="styles.css?v=49" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark brand-mark-svg">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+                    <!-- Shield body -->
+                    <path d="M20 3L5 9v10c0 9.5 6.4 18.4 15 21 8.6-2.6 15-11.5 15-21V9L20 3z"
+                          fill="url(#sgrd)" opacity="0.92"/>
+                    <!-- Inner shield highlight -->
+                    <path d="M20 7L8 12v8c0 7.5 5 14.5 12 17 7-2.5 12-9.5 12-17v-8L20 7z"
+                          fill="white" opacity="0.08"/>
+                    <!-- Lock body -->
+                    <rect x="14" y="20" width="12" height="9" rx="2"
+                          fill="white" opacity="0.95"/>
+                    <!-- Lock shackle -->
+                    <path d="M16 20v-3a4 4 0 0 1 8 0v3"
+                          stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.95"/>
+                    <!-- Keyhole dot -->
+                    <circle cx="20" cy="24" r="1.4" fill="url(#sgrd2)"/>
+                    <!-- Keyhole stem -->
+                    <rect x="19" cy="25" width="2" height="2.5" rx="1" x="19" y="25" fill="url(#sgrd2)"/>
+                    <defs>
+                        <linearGradient id="sgrd" x1="5" y1="3" x2="35" y2="37" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#6a72f0"/>
+                            <stop offset="100%" stop-color="#464feb"/>
+                        </linearGradient>
+                        <linearGradient id="sgrd2" x1="19" y1="23" x2="21" y2="29" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#464feb"/>
+                            <stop offset="100%" stop-color="#3a3fd4"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <strong>OT Platform</strong>
+                <span>Operational Technology Command</span>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="#overview" class="nav-item active" data-section="overview"><span class="ico">◈</span> Overview</a>
+            <a href="#operations" class="nav-item" data-section="operations"><span class="ico">▤</span> OT Operations</a>
+            <a href="#devices" class="nav-item" data-section="devices"><span class="ico">▣</span> Devices Covered</a>
+            <a href="#threats" class="nav-item" data-section="threats"><span class="ico">⚠</span> Vulnerabilities</a>
+            <a href="#intel" class="nav-item" data-section="intel"><span class="ico"><i data-lucide="brain-circuit"></i></span> Threat Intel</a>
+            <a href="#audit" class="nav-item" data-section="audit"><span class="ico"><i data-lucide="clipboard-list"></i></span> Audit Logs</a>
+            <a href="#automation" class="nav-item" data-section="automation"><span class="ico"><i data-lucide="workflow"></i></span> Automation</a>
+            <a href="#socstudio" class="nav-item" data-section="socstudio"><span class="ico"><i data-lucide="layers-3"></i></span> SOC Studio</a>
+            <a href="#siem" class="nav-item nav-subitem" data-section="siem"><span class="ico"><i data-lucide="activity"></i></span> SIEM Workbench</a>
+            <a href="#osint" class="nav-item nav-subitem" data-section="osint"><span class="ico"><i data-lucide="search-code"></i></span> OSINT Navigator</a>
+            <div class="nav-divider"></div>
+            <a href="#network" class="nav-item" data-section="network"><span class="ico">⌁</span> Network</a>
+            <a href="#zerotrust" class="nav-item" data-section="zerotrust"><span class="ico"><i data-lucide="shield-check"></i></span> Unified Defense Platform (UDP) &amp; SECUMAT</a>
+            <a href="#riskmanagement" class="nav-item" data-section="riskmanagement"><span class="ico">▥</span> Risk Management</a>
+            <a href="#integrations" class="nav-item" data-section="integrations"><span class="ico">⚙</span> Settings</a>
+            <a href="#socopt" class="nav-item" data-section="socopt"><span class="ico">🔧</span> OT Optimization</a>
+            <a href="#offsec" class="nav-item" data-section="offsec"><span class="ico">🎯</span> Offensive Security</a>
+            <a href="#incgraph" class="nav-item" data-section="incgraph"><span class="ico">🕸</span> Incident Graph</a>
+            <div class="nav-divider"></div>
+            <a href="#docs" class="nav-item" data-section="docs"><span class="ico">📘</span> Documentation</a>
+        </nav>
+        <!-- Sidebar footer controls: toggle + pin -->
+        <div class="sidebar-controls">
+            <button class="sb-ctrl-btn" id="sidebarToggle" title="Collapse / expand sidebar">
+                <span class="sb-toggle-ico">≡</span>
+                <span class="sb-toggle-label">Collapse</span>
+            </button>
+            <button class="sb-ctrl-btn sb-pin-btn" id="sidebarPin" title="Pin sidebar open">
+                <span class="sb-pin-ico">📌</span>
+            </button>
+        </div>
+        <div class="sidebar-foot" id="connFoot">
+            <div class="conn-dot"></div>
+            <span id="connLabel">Claroty live data</span>
+        </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>OT Platform</h1>
+                <p class="crumbs">Operational Technology Command · Enterprise OT Security</p>
+            </div>
+            <!-- Global Search -->
+            <div class="gs-wrap" id="gsWrap">
+                <div class="gs-input-row">
+                    <span class="gs-icon">🔍</span>
+                    <input type="text" id="gsInput" class="gs-input"
+                        placeholder="Search alerts, CVE, hostname, ticket, IOC, hash…"
+                        autocomplete="off" spellcheck="false" aria-label="Global search" role="combobox" aria-controls="gsResults" aria-expanded="false" aria-autocomplete="list" />
+                    <span class="gs-kbd" id="gsKbd"><kbd class="kbd">/</kbd></span>
+                    <button class="gs-submit" id="gsSearchBtn" type="button" aria-label="Search" title="Search"><i data-lucide="search" aria-hidden="true"></i></button>
+                    <button class="gs-clear" id="gsClear" hidden>✕</button>
+                </div>
+                <div class="gs-results" id="gsResults" hidden role="listbox" aria-label="Search results"></div>
+            </div>
+            <div class="topbar-right">
+                <div class="range-picker" id="rangePicker">
+                    <button class="range-btn" data-range="7">7D</button>
+                    <button class="range-btn active" data-range="30">30D</button>
+                    <button class="range-btn" data-range="90">90D</button>
+                </div>
+                <button class="btn-refresh" id="refreshBtn">⟳ Refresh</button>
+                <button class="btn-import" id="importBtn">⬆ Import Report</button>
+                <input type="file" id="csvInput" accept=".csv" hidden />
+                <button class="btn-export" id="exportBtn" title="Export PDF report">📄 Export</button>
+                <button class="btn-bookmarks" id="bookmarksBtn" title="Saved views & filters">🔖</button>
+                <button class="btn-bell" id="bellBtn" title="Notifications" aria-label="Notifications">
+                    <span class="bell-ico">🔔</span>
+                    <span class="bell-badge" id="bellBadge">0</span>
+                </button>
+                <button class="theme-toggle" id="themeToggle" title="Cycle dark, silver and light themes" aria-label="Cycle dark, silver and light themes">
+                    <span class="tt-icon tt-sun">☀️</span>
+                    <span class="tt-icon tt-silver">◐</span>
+                    <span class="tt-icon tt-moon">🌙</span>
+                    <span class="tt-thumb"></span>
+                </button>
+                <button type="button" class="topbar-tool-btn" id="manageWidgetsBtn" title="Manage Overview widgets" aria-label="Manage Overview widgets" aria-expanded="false"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>Widgets</span></button>
+                <button type="button" class="topbar-tool-btn" id="createAiBtn" title="Search application knowledge or create an evidence-based draft" aria-label="Create with AI" aria-haspopup="dialog" aria-expanded="false"><i data-lucide="wand-sparkles" aria-hidden="true"></i><span>Create with AI</span></button>
+                <button type="button" class="avatar" id="profileMenuBtn" aria-label="Open profile and security menu" aria-haspopup="menu" aria-expanded="false">SA</button>
+            </div>
+        </header>
+
+        <div class="topbar-popover widget-manager-panel" id="widgetManagerPanel" hidden role="dialog" aria-label="Manage Overview widgets">
+            <div class="topbar-popover-head"><strong>Overview widgets</strong><button type="button" class="topbar-popover-close" data-close-popover="widgets" aria-label="Close widget manager">×</button></div>
+            <p>Choose which Overview sections are visible on this device.</p>
+            <div class="dashboard-preset-controls">
+                <label for="savedDashboardSelect">Saved dashboard</label>
+                <select id="savedDashboardSelect"><option value="">Current Overview</option></select>
+                <label for="savedDashboardName">Save current layout as</label>
+                <div class="dashboard-preset-save"><input id="savedDashboardName" type="text" maxlength="48" placeholder="e.g. OT incident triage" /><button type="button" id="saveDashboardPreset">Save</button></div>
+                <button type="button" id="deleteSavedDashboard" disabled>Delete selected dashboard</button>
+                <p id="dashboardManagerStatus" role="status" aria-live="polite"></p>
+            </div>
+            <div class="custom-widget-controls">
+                <label for="customWidgetName">New live metric widget</label>
+                <input id="customWidgetName" type="text" maxlength="36" placeholder="Widget name" />
+                <select id="customWidgetMetric" aria-label="Metric for new widget">
+                    <option value="devices">Loaded devices</option><option value="highRiskDevices">High-risk devices</option>
+                    <option value="alerts">Loaded alerts</option><option value="unresolvedAlerts">Unresolved alerts</option>
+                    <option value="exploitedCves">Known-exploited CVEs</option><option value="events">Loaded network events</option>
+                </select>
+                <button type="button" id="addCustomWidget">Add widget</button>
+            </div>
+            <label><input type="checkbox" data-overview-widget="xdHomeDashboard" checked /> Live xDome Home</label>
+            <label><input type="checkbox" data-overview-widget="xdOverviewLive" checked /> Live inventory overview</label>
+            <label><input type="checkbox" data-overview-widget="xdOverviewAiWidget" checked /> Live xDome analysis</label>
+            <label><input type="checkbox" data-overview-widget="xdOverviewCoverageWidget" checked /> xDome feed coverage</label>
+            <label><input type="checkbox" data-overview-widget="socKpis" checked /> SOC KPI strip</label>
+            <label><input type="checkbox" data-overview-widget="incidentCharts" checked /> Incident trend charts</label>
+            <label><input type="checkbox" data-overview-widget="activityHeatmap" checked /> Incident activity heatmap</label>
+            <div id="customWidgetOptions"></div>
+            <button type="button" class="xd-command" id="resetOverviewWidgets">Restore defaults</button>
+        </div>
+        <div class="topbar-popover profile-menu" id="profileMenu" hidden role="menu" aria-label="Profile and security">
+            <div class="topbar-popover-head"><strong>Profile &amp; security</strong><button type="button" class="topbar-popover-close" data-close-popover="profile" aria-label="Close profile menu">×</button></div>
+            <p>Identity status: <span id="profileIdentityStatus">No identity provider is connected.</span></p>
+            <button type="button" role="menuitem" data-profile-action="profile">Profile &amp; Exports</button>
+            <button type="button" role="menuitem" data-profile-action="sso">SSO &amp; Identity</button>
+            <button type="button" role="menuitem" data-profile-action="mfa">MFA &amp; Access</button>
+            <small>SSO/MFA are not enforced by this local dashboard. Configure an identity provider before relying on authentication controls.</small>
+        </div>
+
+        <!-- Notification panel (rich tabbed) -->
+        <div class="notif-panel" id="notifPanel" hidden role="dialog" aria-label="Notifications">
+            <div class="notif-panel-head">
+                <div class="notif-panel-title">
+                    <span class="notif-panel-icon">🔔</span>
+                    <span>Notifications</span>
+                    <span class="notif-total-badge" id="notifTotalBadge">0</span>
+                </div>
+                <div class="notif-panel-actions">
+                    <button class="notif-markread-btn" id="notifMarkAll">Mark all read</button>
+                    <button class="notif-clear-btn" id="notifClearAll">Clear all</button>
+                </div>
+            </div>
+            <div class="notif-tabs">
+                <button class="notif-tab active" data-tab="all">All <span class="notif-tab-cnt" id="ntcAll">0</span></button>
+                <button class="notif-tab" data-tab="alert">🔴 Alerts <span class="notif-tab-cnt" id="ntcAlerts">0</span></button>
+                <button class="notif-tab" data-tab="sla">⏱ SLA <span class="notif-tab-cnt" id="ntcSla">0</span></button>
+                <button class="notif-tab" data-tab="system">⚙ System <span class="notif-tab-cnt" id="ntcSystem">0</span></button>
+            </div>
+            <div class="notif-list" id="notifList"></div>
+            <div class="notif-footer">
+                <button class="notif-viewall-btn" onclick="showSection('alertfeed'); document.getElementById('notifPanel').hidden=true;">View Live Alert Feed →</button>
+            </div>
+        </div>
+        <!-- Bookmarks panel -->
+        <div class="bm-panel" id="bmPanel" hidden>
+            <div class="bm-head"><span>Saved Views</span><button id="bmSaveBtn">+ Save current</button></div>
+            <div class="bm-list" id="bmList"></div>
+        </div>
+        <div class="content">
+            <div class="report-banner" id="reportBanner" hidden>
+                <span class="rb-dot"></span>
+                <span id="reportBannerText">Report loaded</span>
+            </div>
+            <!-- ============ OVERVIEW ============ -->
+            <section id="overview" class="panel">
+                <div id="xdHomeDashboard" class="xd-portal-dashboard" data-widget-id="xdHomeDashboard"></div>
+                <div id="xdOverviewLive" class="xd-overview-dashboard" data-widget-id="xdOverviewLive"></div>
+                <div id="xdOverviewAiWidget" class="xd-overview-ai-widget" data-widget-id="xdOverviewAiWidget"></div>
+                <div id="xdOverviewCoverageWidget" class="xd-overview-coverage-widget" data-widget-id="xdOverviewCoverageWidget"></div>
+                <div id="customOverviewWidgets" class="custom-overview-widgets"></div>
+                <section class="module-analytics-section" id="moduleAnalyticsSection" aria-labelledby="moduleAnalyticsTitle">
+                    <div class="module-analytics-heading">
+                        <div><h2 id="moduleAnalyticsTitle">Cross-module records</h2><p id="moduleAnalyticsSource">Loading locally persisted data…</p></div>
+                        <button type="button" id="refreshModuleAnalytics" class="topbar-tool-btn">Refresh data</button>
+                    </div>
+                    <div id="moduleAnalyticsGrid" class="module-analytics-grid" aria-live="polite"></div>
+                    <div id="moduleAnalyticsBreakdown" class="module-analytics-breakdown"></div>
+                </section>
+                <div class="kpi-grid" data-widget-id="socKpis">
+                    <div class="kpi-card">
+                        <div class="kpi-top"><span class="kpi-label">MTTD</span><span class="pill green">▲ Good</span></div>
+                        <div class="kpi-value" data-count="11">11<small>min</small></div>
+                        <div class="kpi-sub">Target &lt; 15 min · <span class="up">18% faster</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-top"><span class="kpi-label">MTTR</span><span class="pill green">▲ Good</span></div>
+                        <div class="kpi-value" data-count="47">47<small>min</small></div>
+                        <div class="kpi-sub">Target &lt; 60 min · <span class="up">50% improved</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-top"><span class="kpi-label">Automation Rate</span><span class="pill green">▲ 74%</span></div>
+                        <div class="kpi-value" data-count="74">74<small>%</small></div>
+                        <div class="kpi-sub">Target &gt; 70% · <span class="up">+9 pts MoM</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-top"><span class="kpi-label">Open Incidents</span><span class="pill amber">● Active</span></div>
+                        <div class="kpi-value" data-count="128">128</div>
+                        <div class="kpi-sub">32 critical · <span class="down">−12% WoW</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-top"><span class="kpi-label">Hours Saved / mo</span><span class="pill green">▲ Trend</span></div>
+                        <div class="kpi-value" data-count="1840">1,840<small>h</small></div>
+                        <div class="kpi-sub">≈ 11.5 FTE · <span class="up">Automation ROI</span></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-top"><span class="kpi-label">Posture Score</span><span class="pill green">▲ Strong</span></div>
+                        <div class="kpi-value" data-count="87">87<small>/100</small></div>
+                        <div class="kpi-sub">Risk reduced <span class="up">70%</span> vs baseline</div>
+                    </div>
+                </div>
+
+                <div class="chart-row" data-widget-id="incidentCharts">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Incident Trends</h3><span class="muted">MTTD vs MTTR over time</span></div>
+                        <div class="chart-box"><canvas id="trendChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Alert Volume by Severity</h3></div>
+                        <div class="chart-box"><canvas id="severityChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-row chart-row-full" data-widget-id="activityHeatmap">
+                    <div class="card">
+                        <div class="card-head">
+                            <div><h3>Incident Activity Heatmap</h3><span id="heatmapDescription" class="muted">52-week view — darker cells = more incidents — click a week to drill in</span></div>
+                            <label class="heatmap-range-label" for="heatmapRange">View
+                                <select id="heatmapRange" aria-label="Incident activity time range">
+                                    <option value="2">2 weeks</option>
+                                    <option value="4">4 weeks</option>
+                                    <option value="12">12 weeks</option>
+                                    <option value="26">26 weeks</option>
+                                    <option value="52" selected>52 weeks</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div id="heatmapWrap" class="heatmap-wrap"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ OT OPERATIONS ============ -->
+            <section id="operations" class="panel">
+                <div id="xdOperationsDashboard" class="xd-portal-dashboard"></div>
+                <div id="operationsLegacy" hidden>
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>Analyst Productivity</h3><span class="muted">Cases handled per analyst</span></div>
+                        <div class="chart-box"><canvas id="analystChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>False Positive Reduction</h3></div>
+                        <div class="chart-box"><canvas id="fpChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Incident Closure Rate</h3></div>
+                        <div class="chart-box"><canvas id="closureChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>MTTD vs Severity Scatter</h3><span class="muted">Detection time by severity · bubble size = incident count</span></div>
+                        <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Analyst Leaderboard</h3><span class="muted">Performance ranking this period</span></div>
+                        <div id="leaderboard" class="leaderboard-wrap"></div>
+                    </div>
+                </div>
+                <div class="chart-row chart-row-full">
+                    <div class="card">
+                        <div class="card-head"><h3>Incident Correlation Timeline</h3><span class="muted">Active incident windows — overlapping bars may indicate a coordinated campaign</span></div>
+                        <div class="chart-box" style="height:300px"><canvas id="timelineChart"></canvas></div>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            <!-- ============ DEVICES COVERED ============ -->
+            <section id="devices" class="panel">
+                <div class="integ-settings-header">
+                    <div>
+                        <h2 class="integ-title-main">▣ Devices Covered</h2>
+                        <p class="integ-subtitle">Claroty xDome device overview merged into the OT Platform. Uses the encrypted Claroty backend credential for live coverage.</p>
+                    </div>
+                    <div class="integ-summary"><span id="xdDevicesSource">Loading...</span></div>
+                </div>
+                <div class="kpi-grid five">
+                    <div class="kpi-card sm clickable" id="xdDevCardAll" data-device-filter="all"><div class="kpi-label">Devices Loaded</div><div class="kpi-value" id="xdDevicesTotal">0</div><div class="kpi-sub">Standalone Claroty device inventory</div></div>
+                    <div class="kpi-card sm clickable" id="xdDevCardOnline" data-device-filter="online"><div class="kpi-label">Online</div><div class="kpi-value" id="xdDevicesCoverage">0</div><div class="kpi-sub">Reported connected by xDome</div></div>
+                    <div class="kpi-card sm clickable" id="xdDevCardOffline" data-device-filter="offline"><div class="kpi-label">Offline</div><div class="kpi-value" id="xdDevicesOpenFindings">0</div><div class="kpi-sub">Reported disconnected by xDome</div></div>
+                    <div class="kpi-card sm clickable" id="xdDevCardUnknown" data-device-filter="unknown"><div class="kpi-label">Status Unknown</div><div class="kpi-value" id="xdDevicesUnknown">0</div><div class="kpi-sub">Claroty did not report connectivity</div></div>
+                    <div class="kpi-card sm clickable" id="xdDevCardCritical" data-device-filter="criticalhigh"><div class="kpi-label">Critical / High Risk</div><div class="kpi-value" id="xdDevicesCritical">0</div><div class="kpi-sub">Risk score 60 and above</div></div>
+                </div>
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Devices by Type</h3><span class="muted">xDome device category / type</span></div>
+                        <div class="chart-box"><canvas id="xdDeviceTypeChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Finding Severity</h3><span class="muted">Related vulnerabilities</span></div>
+                        <div class="chart-box"><canvas id="xdDeviceSeverityChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head device-inventory-head">
+                        <div><h3>Claroty Device Inventory</h3><span class="muted" id="xdDeviceResultCount">Devices represented by returned vulnerability relations</span></div>
+                        <div class="device-filters">
+                            <input id="xdDeviceSearch" type="search" placeholder="Search device, IP, model, site" aria-label="Search Claroty devices" />
+                            <select id="xdDeviceSeverityFilter" aria-label="Filter devices by risk">
+                                <option value="">All Risk Scores</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option><option>Very Low</option>
+                            </select>
+                            <select id="xdDeviceStatusFilter" aria-label="Filter devices by connectivity"><option value="">All connectivity states</option><option value="true">Online</option><option value="false">Offline</option><option value="unknown">Unknown</option></select>
+                            <button type="button" id="xdDeviceLoadMore" class="device-details-btn">Load More Devices</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table id="xdDevicesTable">
+                            <thead><tr><th>Device</th><th>IP</th><th>Site</th><th>Manufacturer</th><th>Type / Model</th><th>Risk Score</th><th>Connectivity</th><th></th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="device-table-pagination"><button type="button" class="device-details-btn" id="xdDevicePrevPage">Previous</button><button type="button" class="device-details-btn" id="xdDeviceNextPage">Next</button><span class="muted">Load additional xDome pages to extend search and counts.</span></div>
+                </div>
+                <dialog id="xdDeviceDialog" class="device-dialog">
+                    <div class="device-dialog-head"><div><div class="muted">Claroty xDome device</div><h2 id="xdDeviceDialogTitle"></h2></div><button type="button" id="xdDeviceDialogClose" aria-label="Close device details">×</button></div>
+                    <div id="xdDeviceDialogBody"></div>
+                </dialog>
+            </section>
+
+            <!-- ============ VULNERABILITIES ============ -->
+            <section id="threats" class="panel">
+                <div class="integ-settings-header">
+                    <div>
+                        <h2 class="integ-title-main">⚠ Vulnerabilities</h2>
+                        <p class="integ-subtitle">OT vulnerability analytics plus Claroty xDome device-vulnerability relations in one tab.</p>
+                    </div>
+                    <div class="integ-summary"><span id="xdVulnSource">Loading...</span></div>
+                </div>
+                <div class="kpi-grid four">
+                    <div class="kpi-card sm"><div class="kpi-label">xDome Vulnerabilities</div><div class="kpi-value" id="xdVulnTotal">0</div><div class="kpi-sub">Device-vulnerability relations</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Critical / High</div><div class="kpi-value" id="xdVulnCriticalHigh">0</div><div class="kpi-sub">Priority remediation scope</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Open</div><div class="kpi-value" id="xdVulnOpen">0</div><div class="kpi-sub">Not patched or still active</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Remediated</div><div class="kpi-value" id="xdVulnClosed">0</div><div class="kpi-sub">Patched / closed records</div></div>
+                </div>
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Top Attack Techniques</h3><span class="muted">MITRE ATT&amp;CK mapping</span></div>
+                        <div class="chart-box"><canvas id="mitreChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>High-Risk Users</h3></div>
+                        <ul class="risk-list" id="riskUsers"></ul>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Vulnerability Aging</h3><span class="muted">Open findings by age bucket &amp; severity</span></div>
+                        <div class="chart-box"><canvas id="vulnChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>xDome Severity Mix</h3><span class="muted">Live or demo Claroty data</span></div>
+                        <div class="chart-box"><canvas id="xdVulnSeverityChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head device-inventory-head"><div><h3>xDome Vulnerability Backlog</h3><span class="muted" id="xdVulnResultCount">Awaiting Claroty relations</span></div><div class="device-filters"><input type="search" id="xdVulnSearch" placeholder="Search CVE or asset" aria-label="Search vulnerability backlog"><button type="button" class="device-details-btn" id="xdVulnLoadMore">Load More Findings</button></div></div>
+                    <div class="table-wrap">
+                        <table id="xdVulnTable">
+                            <thead><tr><th>CVE</th><th>Asset</th><th>Severity</th><th>CVSS</th><th>Status</th><th>Detected</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="device-table-pagination"><button type="button" class="device-details-btn" id="xdVulnPrevPage">Previous</button><button type="button" class="device-details-btn" id="xdVulnNextPage">Next</button></div>
+                </div>
+                <div class="chart-row chart-row-full">
+                    <div class="card">
+                        <div class="card-head"><h3>MITRE ATT&amp;CK Coverage Matrix</h3><span class="muted">Tactic columns · technique cells · <span class="swatch green-sw"></span> Detected &nbsp; <span class="swatch amber-sw"></span> Partial &nbsp; <span class="swatch red-sw"></span> Gap</span></div>
+                        <div id="mitreMatrix" class="mitre-matrix"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ THREAT INTEL / IOC ENRICHMENT ============ -->
+            <section id="intel" class="panel">
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><h3>Public Security Intelligence</h3><span class="muted" id="publicFeedUpdated">Loading official feeds...</span></div>
+                    <div class="public-feed-status" id="publicFeedStatus"></div>
+                    <div class="table-wrap">
+                        <table id="publicFeedTable">
+                            <thead><tr><th>Source</th><th>Indicator / Release</th><th>Detail</th><th>Published</th></tr></thead>
+                            <tbody><tr><td colspan="4">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card" id="intelCorrelateCard">
+                    <div class="card-head">
+                        <div>
+                            <h3>Live Exposure Correlation</h3>
+                            <p class="muted">Matches CVEs and IP addresses from the loaded Claroty xDome inventory against the CISA KEV catalogue, FIRST EPSS scores and the Feodo Tracker C2 blocklist.</p>
+                        </div>
+                        <button type="button" id="intelCorrelateBtn" class="device-details-btn">Correlate live data</button>
+                    </div>
+                    <div class="public-feed-status" id="intelCorrelateStatus">Not run yet.</div>
+                    <div class="kpi-grid" id="intelCorrelateKpis" hidden>
+                        <div class="kpi-card sm"><div class="kpi-label">KEV Matches</div><div class="kpi-value" id="intelKevCount">0</div><div class="kpi-sub">Known exploited in the wild</div></div>
+                        <div class="kpi-card sm"><div class="kpi-label">Ransomware-Linked</div><div class="kpi-value" id="intelRansomCount">0</div><div class="kpi-sub">CISA flags ransomware campaign use</div></div>
+                        <div class="kpi-card sm"><div class="kpi-label">C2 Matches</div><div class="kpi-value" id="intelC2Count">0</div><div class="kpi-sub">Observed IP on Feodo blocklist</div></div>
+                    </div>
+                    <div class="table-wrap">
+                        <table id="intelCorrelateTable">
+                            <thead><tr><th>Type</th><th>Indicator</th><th>Detail</th><th>Exploit Probability</th><th>Flag</th></tr></thead>
+                            <tbody><tr><td colspan="5">Run a correlation to populate this table.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <section class="module-analytics-section" id="threatAnalyticsSection" aria-labelledby="threatAnalyticsTitle">
+                    <div class="module-analytics-heading">
+                        <div><h2 id="threatAnalyticsTitle">Threat Analysis · local records</h2><p id="threatAnalyticsSource">Local telemetry only; public feeds and live xDome are reported separately.</p></div>
+                        <button type="button" id="refreshThreatAnalytics" class="topbar-tool-btn">Refresh analysis</button>
+                    </div>
+                    <div id="threatAnalyticsGrid" class="module-analytics-grid" aria-live="polite"></div>
+                    <div id="threatAnalyticsBreakdown" class="module-analytics-breakdown"></div>
+                </section>
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><h3>Snort Rules</h3><span class="muted" id="snortSource">Checking local rule catalog...</span></div>
+                    <div class="snort-controls">
+                        <input type="search" id="snortSearch" placeholder="Search SID, message, action or file" aria-label="Search Snort rules">
+                        <select id="snortState" aria-label="Filter Snort rule status"><option value="all">All rules</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option></select>
+                        <button type="button" class="device-details-btn" id="snortUpdateBtn">Check for rule updates</button>
+                        <button type="button" class="device-details-btn" id="snortImportBtn"><i data-lucide="upload" aria-hidden="true"></i>Import rule archive</button>
+                        <input type="file" id="snortArchive" accept=".tar.gz,.tgz,application/gzip" hidden>
+                        <a class="xd-link" href="https://www.snort.org/downloads/#rule-downloads" target="_blank" rel="noopener noreferrer">Official Snort rules</a>
+                    </div>
+                    <p class="muted" id="snortStats">Snort 3 Community rules update daily when the official source is reachable. Import account-authorized packages here. Rules are catalogued locally, not deployed to a sensor.</p>
+                    <div class="table-wrap"><table><thead><tr><th>SID</th><th>Message</th><th>Action</th><th>File</th><th>Package</th><th>State</th></tr></thead><tbody id="snortRows"><tr><td colspan="6">No rules imported.</td></tr></tbody></table></div>
+                    <div class="xd-risk-pages"><button type="button" id="snortPrev" disabled>Previous</button><span id="snortPageStatus">0 of 0</span><button type="button" id="snortNext" disabled>Next</button></div>
+                    <dialog id="snortDialog" class="device-dialog"><div class="device-dialog-head"><h2 id="snortDialogTitle"></h2><button type="button" id="snortDialogClose" aria-label="Close Snort rule">×</button></div><pre id="snortRuleText" class="snort-rule-text"></pre></dialog>
+                </div>
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><h3>Blacklisted IPs</h3><span class="muted" id="snortBlacklistSource">Checking local IP list...</span></div>
+                    <div class="snort-controls">
+                        <input type="search" id="snortBlacklistSearch" placeholder="Search IP or CIDR" aria-label="Search blacklisted IPs">
+                        <button type="button" class="device-details-btn" id="snortIpImportBtn"><i data-lucide="upload" aria-hidden="true"></i>Import IP list</button>
+                        <input type="file" id="snortIpFile" accept=".blf,.txt,.list,text/plain,application/octet-stream" hidden>
+                    </div>
+                    <textarea id="snortIpText" class="snort-ip-paste" rows="3" placeholder="Paste IPv4, IPv6, or CIDR entries, one per line" aria-label="Paste blacklisted IP addresses"></textarea>
+                    <div class="snort-controls"><button type="button" class="device-details-btn" id="snortIpAddBtn">Add pasted IPs</button><span class="muted" id="snortBlacklistStats">Imported entries stay local and are not deployed to a sensor.</span></div>
+                    <div class="table-wrap"><table><thead><tr><th>IP / CIDR</th></tr></thead><tbody id="snortBlacklistRows"><tr><td>No IP list imported.</td></tr></tbody></table></div>
+                    <div class="xd-risk-pages"><button type="button" id="snortIpPrev" disabled>Previous</button><span id="snortIpPageStatus">0 of 0</span><button type="button" id="snortIpNext" disabled>Next</button></div>
+                </div>
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><h3>Universal IOC Enrichment Search</h3><span class="muted">Auto-detects IP · URL · Domain · Hash · CVE and routes to free intel sources</span></div>
+                    <div class="ioc-search">
+                        <input type="text" id="iocInput" placeholder="Paste an IP, URL, domain, MD5/SHA hash, or CVE-2024-1234…" autocomplete="off" />
+                        <button id="iocSearchBtn">Enrich</button>
+                    </div>
+                    <div class="ioc-type" id="iocType">Enter an IP, URL, domain, hash, or CVE</div>
+                    <div class="ioc-results" id="iocResults"></div>
+                    <div class="local-feed-lookup" id="localFeedLookup" role="status" aria-live="polite">Local indicator lookup is waiting for an IP, domain, or hash.</div>
+                </div>
+                <div class="card local-threat-feeds">
+                    <div class="card-head"><div><h3>Locally indexed IP, domain and hash feeds</h3><span class="muted">Daily refresh · exact-match lookup · no automatic blocking</span></div><button type="button" class="device-details-btn" id="refreshThreatFeeds">Refresh feeds now</button></div>
+                    <div class="public-feed-status" id="threatFeedStatus" role="status" aria-live="polite">Checking local threat-feed index…</div>
+                    <div class="table-wrap"><table><thead><tr><th>Feed</th><th>Type</th><th>Indexed indicators</th><th>State</th><th>Refresh interval</th><th>Last successful refresh</th></tr></thead><tbody id="threatFeedRows"><tr><td colspan="6">Loading local feed status…</td></tr></tbody></table></div>
+                </div>
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><h3>Threat Intel Enrichment KPIs</h3></div>
+                    <div class="mini-kpi-grid" id="enrichKpis"></div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><h3>Enrichment Source Catalog</h3><span class="muted">Free IOC investigation ecosystem</span></div>
+                    <div class="table-wrap">
+                        <table id="catalogTable">
+                            <thead><tr><th>Source</th><th>Purpose</th><th>Supported IOCs</th><th>API</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>VirusTotal</strong></td><td>Multi-engine IP/URL/file analysis</td><td>IP, Domain, URL, MD5, SHA1, SHA256, Files</td><td>api/v3</td></tr>
+                                <tr><td><strong>AlienVault OTX</strong></td><td>Community threat intelligence</td><td>IP, Domain, URL, Hash, CVE, Pulses</td><td>api/v1</td></tr>
+                                <tr><td><strong>AbuseIPDB</strong></td><td>IP reputation &amp; abuse history</td><td>IP</td><td>api/v2/check</td></tr>
+                                <tr><td><strong>Cisco Talos</strong></td><td>Domain/IP/email reputation</td><td>Domain, IP, Email, Spam</td><td>Commercial</td></tr>
+                                <tr><td><strong>URLScan.io</strong></td><td>Phishing &amp; web analysis</td><td>URL, Domain, Screenshots</td><td>api/v1</td></tr>
+                                <tr><td><strong>PhishTank</strong></td><td>Phishing URL verification</td><td>URL</td><td>checkurl</td></tr>
+                                <tr><td><strong>Google Safe Browsing</strong></td><td>Malicious URL/domain checks</td><td>URL, Domain, Malware URLs</td><td>safebrowsing</td></tr>
+                                <tr><td><strong>MalwareBazaar</strong></td><td>Malware sample repository</td><td>SHA256, Samples, Actors</td><td>mb-api/v1</td></tr>
+                                <tr><td><strong>ThreatFox</strong></td><td>IOC &amp; botnet feeds</td><td>IOC feeds, Malware, Botnet</td><td>api/v1</td></tr>
+                                <tr><td><strong>URLHaus</strong></td><td>Malware distribution URLs</td><td>Malicious URLs</td><td>api/v1</td></tr>
+                                <tr><td><strong>GreyNoise</strong></td><td>Internet scanner noise filtering</td><td>IP (scanners, noise)</td><td>api</td></tr>
+                                <tr><td><strong>Shodan</strong></td><td>Attack surface &amp; exposed assets</td><td>IP, Ports, Assets</td><td>api</td></tr>
+                                <tr><td><strong>Censys</strong></td><td>Internet asset &amp; cert search</td><td>Hosts, Certs, Domains</td><td>api</td></tr>
+                                <tr><td><strong>NIST NVD</strong></td><td>CVE vulnerability data</td><td>CVE (with CISA KEV flag)</td><td>rest/json/cves/2.0</td></tr>
+                                <tr><td><strong>CISA KEV</strong></td><td>Known-exploited vulnerabilities</td><td>CVE (actively exploited)</td><td>JSON feed</td></tr>
+                                <tr><td><strong>MITRE CVE</strong></td><td>Authoritative CVE records</td><td>CVE</td><td>CVERecord</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ INSIDER THREAT ============ -->
+            <section id="insider" class="panel">
+                <div class="kpi-grid four">
+                    <div class="kpi-card sm"><div class="kpi-label">High-Risk Users</div><div class="kpi-value" data-count="23">23</div><div class="kpi-sub">UBA risk &gt; 70</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">New Insider Cases</div><div class="kpi-value" data-count="9">9</div><div class="kpi-sub">This period</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Exfiltration Attempts</div><div class="kpi-value" data-count="14">14</div><div class="kpi-sub">DLP blocked 12</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Confirmed Insider Threats</div><div class="kpi-value" data-count="3">3</div><div class="kpi-sub">Escalated to Legal/HR</div></div>
+                </div>
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>User Risk Score Trend</h3><span class="muted">Privileged vs third-party vs standard</span></div>
+                        <div class="chart-box"><canvas id="insiderTrendChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Behavioral Anomalies</h3></div>
+                        <div class="chart-box"><canvas id="anomalyChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>Data Exfiltration Signals</h3></div>
+                        <div class="chart-box"><canvas id="exfilChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Insider Investigation KPIs</h3></div>
+                        <div class="table-wrap">
+                            <table id="insiderKpiTable">
+                                <thead><tr><th>KPI</th><th>Value</th><th>Status</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ AUTOMATION ============ -->
+            <section id="automation" class="panel">
+                <section class="module-automation-section" aria-labelledby="moduleAutomationTitle">
+                    <div class="module-analytics-heading">
+                        <div><h2 id="moduleAutomationTitle">Local automation dry-runs</h2><p id="moduleAutomationSource">External actions are disabled; runs use persisted local module records only.</p></div>
+                        <button type="button" id="refreshModuleAutomation" class="topbar-tool-btn">Refresh runs</button>
+                    </div>
+                    <div id="moduleAutomationPlaybooks" class="module-automation-grid"></div>
+                    <div id="moduleAutomationStatus" role="status" aria-live="polite"></div>
+                    <h3>Recent runs</h3>
+                    <div id="moduleAutomationRuns" class="module-automation-runs"></div>
+                </section>
+                <div class="kpi-grid four">
+                    <div class="kpi-card sm"><div class="kpi-label">Automated Playbooks</div><div class="kpi-value" data-count="42">42</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Execution Success</div><div class="kpi-value" data-count="96">96<small>%</small></div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Manual Tasks Eliminated</div><div class="kpi-value" data-count="68">68<small>%</small></div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Annual Cost Avoidance</div><div class="kpi-value">$2.4<small>M</small></div></div>
+                </div>
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Automation Success Rate</h3><span class="muted">Executions vs failures</span></div>
+                        <div class="chart-box"><canvas id="autoChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Hours Saved by Use Case</h3></div>
+                        <div class="chart-box"><canvas id="savingsChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ AUTOMATION ROI ============ -->
+            <section id="roi" class="panel">
+                <div class="kpi-grid four">
+                    <div class="kpi-card sm"><div class="kpi-label">Hours Saved / mo</div><div class="kpi-value" data-count="1840">1,840<small>h</small></div><div class="kpi-sub">(Incidents × manual min) ÷ 60</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">FTE Savings</div><div class="kpi-value" data-count="11">11.5<small>FTE</small></div><div class="kpi-sub">Hours ÷ 160</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Annual Cost Avoidance</div><div class="kpi-value">$2.4<small>M</small></div><div class="kpi-sub">FTE × $80k</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Auto Closure Rate</div><div class="kpi-value" data-count="72">72<small>%</small></div><div class="kpi-sub">Target &gt; 65%</div></div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>ROI Calculator</h3><span class="muted">Adjust inputs to model savings</span></div>
+                        <div class="roi-calc">
+                            <div class="roi-inputs">
+                                <label>Automated incidents / month
+                                    <input type="number" id="roiIncidents" value="1000" min="0" />
+                                </label>
+                                <label>Avg. manual effort (min)
+                                    <input type="number" id="roiMinutes" value="20" min="0" />
+                                </label>
+                                <label>Automation processing (min)
+                                    <input type="number" id="roiProc" value="2" min="0" />
+                                </label>
+                                <label>Annual analyst cost ($)
+                                    <input type="number" id="roiCost" value="80000" min="0" />
+                                </label>
+                            </div>
+                            <div class="roi-outputs">
+                                <div class="roi-out"><span>Hours Saved / mo</span><strong id="outHours">—</strong></div>
+                                <div class="roi-out"><span>FTE Savings</span><strong id="outFte">—</strong></div>
+                                <div class="roi-out accent"><span>Annual Cost Avoidance</span><strong id="outCost">—</strong></div>
+                            </div>
+                        </div>
+                        <div class="formula-note">
+                            <code>Hours Saved = (Incidents × Manual&nbsp;min − Incidents × Processing&nbsp;min) ÷ 60</code>
+                            <code>FTE Savings = Hours Saved × 12 ÷ (160 × 12)&nbsp;&nbsp;→&nbsp;&nbsp;Cost Avoidance = FTE × Annual Analyst Cost</code>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Enrichment Automation</h3><span class="muted">Manual tasks eliminated</span></div>
+                        <div class="chart-box"><canvas id="enrichChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Cumulative Cost Avoidance</h3><span class="muted">Running annualized savings</span></div>
+                        <div class="chart-box"><canvas id="cumCostChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>ROI Metric Targets</h3></div>
+                        <div class="table-wrap">
+                            <table id="roiTable">
+                                <thead><tr><th>Metric</th><th>Target</th><th>Actual</th><th>Status</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ AUDIT LOGS ============ -->
+            <section id="audit" class="panel">
+                <div class="module-analytics-heading">
+                    <div><h2>Audit Log Explorer · all connected tools</h2><p id="auditEventStatus">Loading locally stored integration, audit and security events…</p></div>
+                    <div class="rubrik-live-actions"><button type="button" class="topbar-tool-btn" id="auditRefresh"><i data-lucide="refresh-cw" aria-hidden="true"></i><span>Sync Rubrik now</span></button><button type="button" class="topbar-tool-btn" id="auditRubrikMore" hidden>Load more Rubrik events</button></div>
+                </div>
+                <p id="auditRubrikStatus" class="public-feed-status" role="status" aria-live="polite">Rubrik events sync when you open this tab. Stored records remain visible if the live connection is unavailable.</p>
+                <div class="rubrik-live-actions" role="tablist" aria-label="Audit log tool tabs" style="margin-bottom:12px;"><button type="button" class="topbar-tool-btn" id="auditTabAll" role="tab" aria-selected="true">All tools</button><button type="button" class="topbar-tool-btn" id="auditTabRubrik" role="tab" aria-selected="false">Rubrik</button></div>
+                <div class="card" id="auditRubrikOrigin" hidden>
+                    <div class="card-head"><div><h3>Rubrik log origin</h3><span class="muted">Confirms where stored Rubrik records came from, based on the current filters</span></div></div>
+                    <div id="auditRubrikOriginBody" class="public-feed-status" aria-live="polite"></div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><div><h3>Filter log records</h3><span class="muted">Sources are discovered from stored records. Configured tools without ingested events are not shown.</span></div></div>
+                    <form id="auditEventForm" class="siem-search-form">
+                        <label for="auditSourceFilter">Tool / source</label>
+                        <select id="auditSourceFilter"><option value="">All tools</option></select>
+                        <label for="auditCategoryFilter">Category</label>
+                        <select id="auditCategoryFilter"><option value="">All categories</option><option value="audit">Audit</option><option value="operational">Operational</option><option value="threat">Threat</option><option value="vulnerability">Vulnerability</option></select>
+                        <label for="auditSeverityFilter">Severity</label>
+                        <select id="auditSeverityFilter"><option value="">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="unknown">Unknown</option></select>
+                        <label for="auditTextFilter">Search</label>
+                        <input type="search" id="auditTextFilter" placeholder="Event, device, IOC, or detail" autocomplete="off">
+                        <button type="submit" class="device-details-btn">Apply filters</button>
+                    </form>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Time</th><th>Category</th><th>Event</th><th>Tool / source</th><th>Severity / status</th><th>Device / resource</th><th>Path / IOCs</th><th>Routed to</th><th>Details</th></tr></thead>
+                            <tbody id="auditEventRows"><tr><td colspan="9">Loading local logs…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="device-table-pagination"><button type="button" class="device-details-btn" id="auditPrevPage" aria-label="Previous log page" disabled>Previous</button><button type="button" class="device-details-btn" id="auditNextPage" aria-label="Next log page" disabled>Next</button></div>
+                </div>
+            </section>
+
+            <!-- ============ SIEM INTEGRATIONS ============ -->
+            <section id="siem" class="panel">
+                <div class="module-analytics-heading">
+                    <div><h2>SIEM Workbench · live local evidence</h2><p id="siemDashboardStatus">Loading events and connected-source status…</p></div>
+                    <button type="button" class="topbar-tool-btn" id="refreshApiFeeds">Sync API feeds</button>
+                    <button type="button" class="topbar-tool-btn" id="refreshSiemDashboard">Refresh workbench</button>
+                </div>
+                <p id="apiFeedSyncStatus" class="public-feed-status" role="status" aria-live="polite">Sync reads configured GitHub, GitLab, MISP, Keycloak, OpenSearch, Wazuh Indexer, SentinelOne, Defender for Cloud Apps, Prisma Cloud, ONTAP, and Cato audit feeds. Rubrik polling is available in Settings.</p>
+                <div id="siemLiveKpis" class="module-analytics-grid" aria-live="polite"></div>
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><div><h3>Local event search</h3><span class="muted">KQL-style filters search stored records only; no query executes against a remote SIEM.</span></div></div>
+                    <form id="siemSearchForm" class="siem-search-form">
+                        <label for="siemSearchQuery">Query</label>
+                        <input type="search" id="siemSearchQuery" placeholder='source:Rubrik severity:critical event_type:backup device:"server 1" ioc:203.0.113.10' autocomplete="off">
+                        <button type="submit" class="device-details-btn">Search local events</button>
+                    </form>
+                    <div id="siemSearchStatus" class="public-feed-status" role="status" aria-live="polite">Searches canonical events and saved alert, vulnerability and integration records.</div>
+                    <div class="table-wrap"><table><thead><tr><th>Time</th><th>Event</th><th>Source</th><th>Severity / status</th><th>Device</th><th>Path</th><th>IOC</th><th>Module</th><th>Details</th></tr></thead><tbody id="siemEventRows"><tr><td colspan="9">Run a local event search.</td></tr></tbody></table></div>
+                </div>
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Stored event volume</h3><span class="muted">Daily counts from local canonical logs and module records · not external SIEM ingest</span></div>
+                        <div class="chart-box"><canvas id="siemChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Records by observed source</h3><span class="muted">Source attribution in stored records</span></div>
+                        <div class="chart-box"><canvas id="siemShareChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-row siem-evidence-grid">
+                    <div class="card">
+                        <div class="card-head"><h3>Framework audit evidence</h3><span class="muted">Assignment/review records only · not certification</span></div>
+                        <div class="table-wrap"><table><thead><tr><th>Framework</th><th>Assignments</th><th>Reviewed</th><th>State</th></tr></thead><tbody id="siemFrameworkRows"><tr><td colspan="4">Loading local audit evidence…</td></tr></tbody></table></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Observed ATT&amp;CK techniques</h3><span class="muted">Local events vs loaded Snort rule catalogue</span></div>
+                        <div class="public-feed-status" id="siemAttackStatus"></div>
+                        <div class="table-wrap"><table><thead><tr><th>Technique</th><th>Occurrences</th><th>Tactic</th><th>Catalogue evidence</th></tr></thead><tbody id="siemAttackRows"><tr><td colspan="4">Loading observed techniques…</td></tr></tbody></table></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px;">
+                    <div class="card-head"><h3>Connected source readiness</h3><span class="muted">A saved credential is not proof of API connectivity or data flow</span></div>
+                    <div id="siemCards" class="integration-grid"></div>
+                </div>
+                <div class="chart-row siem-evidence-grid">
+                    <div class="card">
+                        <div class="card-head"><h3>Threat and vulnerability feed health</h3><span class="muted">Live public-feed checks and local index state</span></div>
+                        <div id="siemFeedStatus" class="public-feed-status" aria-live="polite"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Local detection engine</h3><span class="muted">Engine binary and rule catalogue are separate</span></div>
+                        <div id="siemDetectionStatus" class="public-feed-status" aria-live="polite"></div>
+                    </div>
+                </div>
+                <p class="muted siem-method-note" id="siemMethodNote"></p>
+            </section>
+
+            <!-- ============ OSINT NAVIGATOR ============ -->
+            <section id="osint" class="panel">
+                <div class="module-analytics-heading">
+                    <div><h2>OSINT Navigator · investigation pivots</h2><p id="osintStatus">Loading the local technique catalogue…</p></div>
+                    <button type="button" class="topbar-tool-btn" id="refreshOsint">Refresh catalogue</button>
+                </div>
+                <div id="osintKpis" class="module-analytics-grid" aria-live="polite"></div>
+
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><div><h3>Pivot from an observable</h3><span class="muted">Classifies the input, runs this platform's own checks, and lists the remaining manual steps.</span></div></div>
+                    <form id="osintPivotForm" class="siem-search-form">
+                        <label for="osintPivotValue">Observable</label>
+                        <input type="search" id="osintPivotValue" placeholder="203.0.113.10 · example.com · CVE-2024-21412 · user@example.com · sha256 hash" autocomplete="off">
+                        <button type="submit" class="device-details-btn">Run local pivot</button>
+                    </form>
+                    <div id="osintPivotStatus" class="public-feed-status" role="status" aria-live="polite">Only local indexes are queried. Nothing is sent to an external service.</div>
+                    <div id="osintPivotResult"></div>
+                </div>
+
+                <details class="card osint-collapsible" open>
+                    <summary class="card-head"><h3>Technique catalogue</h3><span class="muted" id="osintTechniqueCount">Loading techniques…</span></summary>
+                    <form id="osintFilterForm" class="siem-search-form">
+                        <label for="osintQuery">Search</label>
+                        <input type="search" id="osintQuery" placeholder="certificate, breach, geolocation…" autocomplete="off">
+                        <label for="osintCategory">Category</label>
+                        <select id="osintCategory"><option value="">All categories</option></select>
+                        <label for="osintInput">Input</label>
+                        <select id="osintInput"><option value="">Any input</option></select>
+                        <label for="osintAccess">Access</label>
+                        <select id="osintAccess"><option value="">Any access</option></select>
+                        <button type="submit" class="device-details-btn">Apply filters</button>
+                    </form>
+                    <div id="osintSearchStatus" class="public-feed-status" role="status" aria-live="polite"></div>
+                    <div class="table-wrap"><table><thead><tr><th>Technique</th><th>Category</th><th>Subcategory</th><th>Inputs</th><th>Produces</th><th>Access</th><th>Runs here</th><th>Detail</th></tr></thead><tbody id="osintTechniqueRows"><tr><td colspan="8">Loading techniques…</td></tr></tbody></table></div>
+                </details>
+
+                <details class="card osint-collapsible" open>
+                    <summary class="card-head"><h3>Discipline coverage</h3><span class="muted" id="osintDisciplineCount">Loading disciplines…</span></summary>
+                    <div class="table-wrap"><table><thead><tr><th>Category</th><th>Techniques</th><th>Run locally</th><th>Subcategories</th><th>Scope</th></tr></thead><tbody id="osintCategoryRows"><tr><td colspan="5">Loading categories…</td></tr></tbody></table></div>
+                </details>
+                <p class="muted siem-method-note" id="osintMethodNote"></p>
+            </section>
+
+            <!-- ============ PLAYBOOKS ============ -->
+            <section id="playbooks" class="panel">
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-head"><h3>Phishing Email Response — Workflow</h3><span class="muted">Swimlane playbook orchestration</span></div>
+                    <div class="mermaid" id="phishingDiagram">
+flowchart TD
+    A(["Phishing reported or M365 alert"]) --> B["Create incident record in Swimlane"]
+    B --> C["Auto-enrich: URL detonation, sender rep, VirusTotal, WHOIS"]
+    C --> D{"Malicious indicators found?"}
+    D -->|No| E["Auto-close as false positive"]
+    D -->|Yes| F["Quarantine message and block sender via M365 and Defender"]
+    F --> G["Search and scope mailbox exposure"]
+    G --> H{"Bulk purge needed for more than 25 mailboxes?"}
+    H -->|Yes| I(["Analyst approval required"])
+    H -->|No| J["Auto-purge malicious mail"]
+    I --> J
+    J --> K["Reset credentials and force MFA via Entra ID"]
+    K --> L["Update TI and block IOCs in Sentinel and Palo Alto"]
+    L --> M(["Close incident and notify user"])
+    E --> M
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><h3>Security Use Case Playbooks</h3><span class="muted">Trigger → Workflow → Actions → Integrations</span></div>
+                    <div class="table-wrap">
+                        <table id="playbookTable">
+                            <thead>
+                                <tr><th>Use Case</th><th>Trigger Source</th><th>Automated Actions</th><th>Human Approval</th><th>Integrations</th><th>SLA</th><th>Savings</th><th>Tracked cases (open / total)</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ EXEC SCORECARD ============ -->
+            <section id="scorecard" class="panel">
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>OT Platform Capability Radar</h3><span class="muted">Maturity vs target across domains</span></div>
+                        <div class="chart-box"><canvas id="radarChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>KPI Scorecard</h3><span class="muted">RAG status vs target</span></div>
+                        <div class="table-wrap">
+                            <table id="kpiTable">
+                                <thead><tr><th>KPI</th><th>Target</th><th>Actual</th><th>Status</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>Executive Outcomes</h3></div>
+                        <ul class="outcome-list">
+                            <li><span class="oc-val">70%</span> reduction in manual OT response activities</li>
+                            <li><span class="oc-val">50%</span> improvement in MTTR</li>
+                            <li><span class="oc-val">80%</span> phishing triage automation</li>
+                            <li><span class="oc-val">90%</span> endpoint containment automation</li>
+                            <li><span class="oc-val">30–40%</span> OT operational cost reduction</li>
+                            <li><span class="oc-val">✓</span> Improved compliance &amp; audit readiness</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ LIVE ALERT FEED ============ -->
+            <section id="alertfeed" class="panel">
+                <div id="xdAlertsDashboard" class="xd-portal-dashboard"></div>
+                <div class="alert-feed-toolbar">
+                    <div class="af-filters">
+                        <select id="afSevFilter" class="af-select"><option value="">All Severities</option><option value="Critical">Critical</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select>
+                        <select id="afCatFilter" class="af-select"><option value="">All Categories</option><option value="Malware">Malware/AV</option><option value="Phishing">Phishing</option><option value="Identity">Identity Risk</option><option value="SIEM">SIEM Alert</option></select>
+                        <select id="afStateFilter" class="af-select"><option value="">All States</option><option value="New">New</option><option value="Investigating">Investigating</option><option value="Acknowledged">Acknowledged</option><option value="Escalated">Escalated</option><option value="Contained">Contained</option></select>
+                        <label class="af-toggle"><input type="checkbox" id="afAutoPlay" checked> Auto-refresh</label>
+                    </div>
+                    <div class="af-stats" id="afStats">Loading feed…</div>
+                </div>
+                <div class="alert-ticker" id="alertTicker"></div>
+                <div class="chart-row" style="margin-top:16px">
+                    <div class="card">
+                        <div class="card-head"><h3>Alert Rate (last 60s)</h3></div>
+                        <div class="chart-box"><canvas id="feedRateChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Severity Distribution</h3></div>
+                        <div class="chart-box"><canvas id="feedSevChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="socstudio" class="panel soc-studio-panel" aria-label="SOC Studio">
+                <div class="soc-studio-heading">
+                    <div><p class="soc-eyebrow">Build, document, and operate</p><h2>SOC Studio</h2><p>One workspace for SOC reports, operating plans, staffing, training, detections, and threat-intelligence workflows.</p></div>
+                    <span class="soc-local-note">Local drafts · no vendor actions</span>
+                </div>
+                <div class="soc-studio-shortcuts" aria-label="Existing SOC modules">
+                    <span>Open existing modules:</span>
+                    <button type="button" data-soc-open-section="siem">SIEM Workbench</button>
+                    <button type="button" data-soc-open-section="osint">OSINT Navigator</button>
+                    <button type="button" data-soc-open-section="intel">Threat Intel</button>
+                    <button type="button" data-soc-open-section="alertfeed">Live alerts</button>
+                    <button type="button" data-soc-open-section="playbooks">Playbooks</button>
+                    <button type="button" data-soc-open-section="integrations">Configure integrations</button>
+                </div>
+                <div class="soc-studio-tabs" role="tablist" aria-label="SOC Studio tools">
+                    <button type="button" role="tab" aria-selected="true" data-soc-view="reports">Reports</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="sentinel">Sentinel plan</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="shifts">ShiftGuard</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="handbook">Handbook</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="learning">Career Launchpad</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="dashboards">Dashboards</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="elk">ELK detections</button>
+                    <button type="button" role="tab" aria-selected="false" data-soc-view="cti">CTI / IOC</button>
+                </div>
+                <div id="socStudioLiveOverview" class="soc-studio-live-overview" aria-live="polite"></div>
+                <button type="button" id="socStudioRefresh" class="soc-refresh-button"><i data-lucide="refresh-cw" aria-hidden="true"></i> Refresh live data</button>
+                <p id="socStudioStatus" class="soc-studio-status" role="status" aria-live="polite"></p>
+                <div id="socStudioView" class="soc-studio-workspace" role="tabpanel" aria-live="polite"></div>
+            </section>
+
+            <section id="network" class="panel"><div id="xdNetworkDashboard" class="xd-portal-dashboard"></div></section>
+
+            <!-- ============ GEO THREAT MAP ============ -->
+            <section id="threatmap" class="panel">
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Global Threat Origin Map</h3><span class="muted">Top threat-source countries · bubble size = incident volume</span></div>
+                        <div class="geo-map-wrap">
+                            <div class="geo-map-bg" id="geoMapBg"></div>
+                            <div class="chart-box geo-chart-box"><canvas id="geoChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Top 10 Source Countries</h3></div>
+                        <div id="geoTable" class="geo-table"></div>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>Attack Type by Region</h3></div>
+                        <div class="chart-box"><canvas id="geoTypeChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Threat Volume Timeline</h3></div>
+                        <div class="chart-box"><canvas id="geoTimeChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="zerotrust" class="panel">
+                <div class="udp-view-tabs" id="udpViewTabs" role="tablist" aria-label="Unified Defense views">
+                    <button class="udp-view-tab active" type="button" role="tab" id="udpProgramTab" aria-controls="udpProgramPanel" aria-selected="true" data-udp-view="program">Unified Defense</button>
+                    <button class="udp-view-tab" type="button" role="tab" id="udpSecumatTab" aria-controls="udpSecumatPanel" aria-selected="false" data-udp-view="secumat">SECUMAT</button>
+                </div>
+                <div id="udpProgramPanel" class="udp-view-panel" role="tabpanel" aria-labelledby="udpProgramTab">
+                    <div id="zeroTrustApp" class="zero-trust-app" aria-live="polite"></div>
+                </div>
+                <div id="udpSecumatPanel" class="udp-view-panel" role="tabpanel" aria-labelledby="udpSecumatTab" hidden>
+                    <div class="secumat-workspace-head">
+                        <div><h2>SECUMAT</h2><p>OT/ICS and IT vulnerability management</p></div>
+                        <a class="xd-command" href="/project%20-old/secumat/dashboard.html?v=43" target="_blank" rel="noopener noreferrer">Open standalone</a>
+                    </div>
+                    <p class="secumat-backend-note" role="status">SECUMAT view is isolated to its dashboard file. Its legacy audit, upload, and report API endpoints are not registered in this platform server, so those actions require the SECUMAT backend.</p>
+                    <iframe class="secumat-workspace-frame" src="/project%20-old/secumat/dashboard.html?v=43" title="SECUMAT vulnerability and compliance dashboard" loading="eager"></iframe>
+                </div>
+            </section>
+
+            <!-- ============ SLA BREACH TRACKER ============ -->
+            <section id="sla" class="panel">
+                <div class="sla-toolbar">
+                    <div>
+                        <h2 class="sla-section-title">⏱ SLA Breach Tracker</h2>
+                        <p class="sla-section-sub">Click any KPI card or incident card to drill into records</p>
+                    </div>
+                    <div class="sla-toolbar-right">
+                        <label class="ai-mini-toggle" title="Auto-Investigate new breaches with AI">
+                            <input type="checkbox" id="slaAutoAI" checked />
+                            <span class="ai-mini-track"><span class="ai-mini-thumb"></span></span>
+                            <span>Auto-AI</span>
+                        </label>
+                        <button class="ai-create-btn" id="slaAIBtn" title="Investigate all breached/at-risk incidents with AI">
+                            🤖 Create with AI
+                        </button>
+                        <button class="btn-refresh sla-refresh-btn" id="slaRefreshBtn">⟳ Refresh</button>
+                    </div>
+                </div>
+                <p class="muted" id="slaSource">Loading xDome alerts…</p>
+                <div class="kpi-grid four sla-kpi-clickable" id="slaKpiGrid">
+                    <div class="kpi-card sm clickable" id="slaCardBreached" data-sla-filter="breached">
+                        <div class="kpi-label">Breached SLAs</div>
+                        <div class="kpi-value" id="slaBreached">0</div>
+                        <div class="kpi-sub">Needs immediate action</div>
+                        <div class="kpi-card-action">Click to view →</div>
+                    </div>
+                    <div class="kpi-card sm clickable" id="slaCardAtRisk" data-sla-filter="atrisk">
+                        <div class="kpi-label">At Risk (&lt;2h)</div>
+                        <div class="kpi-value" id="slaAtRisk">0</div>
+                        <div class="kpi-sub">Approaching SLA</div>
+                        <div class="kpi-card-action">Click to view →</div>
+                    </div>
+                    <div class="kpi-card sm clickable" id="slaCardOnTrack" data-sla-filter="ontrack">
+                        <div class="kpi-label">On Track</div>
+                        <div class="kpi-value" id="slaOnTrack">0</div>
+                        <div class="kpi-sub">Within SLA</div>
+                        <div class="kpi-card-action">Click to view →</div>
+                    </div>
+                    <div class="kpi-card sm clickable" id="slaCardAll" data-sla-filter="all">
+                        <div class="kpi-label">Avg Time to SLA</div>
+                        <div class="kpi-value" id="slaAvg">—</div>
+                        <div class="kpi-sub">Remaining across open</div>
+                        <div class="kpi-card-action">View all →</div>
+                    </div>
+                </div>
+                <div class="sla-active-filter" id="slaActiveFilter" hidden>
+                    <span id="slaFilterLabel">Showing: All</span>
+                    <button class="sla-filter-clear" id="slaFilterClear">✕ Clear filter</button>
+                </div>
+                <div class="sla-filters" id="slaFilters" style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+                    <input type="search" id="slaFText" placeholder="Search ID, title, device" aria-label="Search incidents">
+                    <select id="slaFSeverity" aria-label="Severity"><option value="">All severities</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+                    <select id="slaFStatus" aria-label="Case status"><option value="">All case statuses</option><option value="new">New</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option></select>
+                    <select id="slaFOwner" aria-label="Analyst"><option value="">All analysts</option></select>
+                    <select id="slaFPlaybook" aria-label="Playbook"><option value="">All playbooks</option></select>
+                    <select id="slaFSite" aria-label="Site"><option value="">All sites</option></select>
+                    <label>From <input type="date" id="slaFFrom"></label>
+                    <label>To <input type="date" id="slaFTo"></label>
+                    <button type="button" class="sla-filter-clear" id="slaFReset">Reset filters</button>
+                </div>
+                <div class="sla-cards" id="slaCards"></div>
+                <div class="chart-row" style="margin-top:16px">
+                    <div class="card wide">
+                        <div class="card-head"><h3>SLA Compliance Trend</h3><span class="muted">% of incidents closed within SLA per day</span></div>
+                        <div class="chart-box"><canvas id="slaTrendChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>SLA Breach by Category</h3></div>
+                        <div class="chart-box"><canvas id="slaBreachChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ OT OPTIMIZATION ============ -->
+            <section id="socopt" class="panel">
+
+                <!-- Hero header -->
+                <div class="soco-header">
+                    <div class="soco-title-block">
+                        <h2 class="soco-main-title">🔧 OT Optimization Center</h2>
+                        <p class="soco-subtitle">Maturity assessment · gap analysis · prioritised recommendations · industry benchmarks</p>
+                    </div>
+                    <div class="soco-score-ring" id="socoScoreRing">
+                        <svg viewBox="0 0 100 100" width="110" height="110">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" stroke-width="10"/>
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="10"
+                                stroke-dasharray="264" stroke-dashoffset="66" stroke-linecap="round"
+                                transform="rotate(-90 50 50)" class="soco-ring-fill"/>
+                            <text x="50" y="46" text-anchor="middle" font-size="18" font-weight="800" fill="var(--text)">75</text>
+                            <text x="50" y="60" text-anchor="middle" font-size="9" fill="var(--muted)">Maturity</text>
+                        </svg>
+                    </div>
+                    <div class="soco-kpi-strip" id="socoKpiStrip">
+                        <div class="soco-kpi"><span class="soco-kv green" id="socoQuickWins">0</span><span>Quick Wins</span></div>
+                        <div class="soco-kpi"><span class="soco-kv amber" id="socoGaps">0</span><span>Gaps Found</span></div>
+                        <div class="soco-kpi"><span class="soco-kv accent" id="socoSavings">$0</span><span>Est. Savings</span></div>
+                        <div class="soco-kpi"><span class="soco-kv" id="socoBenchmark">—</span><span>vs Industry</span></div>
+                    </div>
+                </div>
+
+                <!-- Row 1: Maturity radar + maturity table -->
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>OT Maturity Radar</h3><span class="muted">Current vs target vs industry average across 8 domains</span></div>
+                        <div class="chart-box" style="height:300px"><canvas id="socoMaturityChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Maturity by Domain</h3><span class="muted">Score / 5 — click row to see recommendations</span></div>
+                        <div class="table-wrap"><table id="socoMaturityTable">
+                            <thead><tr><th>Domain</th><th>Score</th><th>Target</th><th>Gap</th><th>Priority</th></tr></thead>
+                            <tbody></tbody>
+                        </table></div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Benchmark bar + coverage gap -->
+                <div class="chart-row">
+                    <div class="card wide">
+                        <div class="card-head"><h3>Industry Benchmark Comparison</h3><span class="muted">Your OT Platform vs peer orgs (same sector, same size)</span></div>
+                        <div class="chart-box"><canvas id="socoBenchChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Coverage Gap Heatmap</h3></div>
+                        <div class="chart-box"><canvas id="socoGapChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Recommendations table -->
+                <div class="card" style="margin-bottom:16px">
+                    <div class="card-head">
+                        <h3>Optimisation Recommendations</h3>
+                        <span class="muted">Prioritised by impact × effort ÷ cost — click any row to expand</span>
+                        <div class="soco-rec-filters" id="socoRecFilters">
+                            <button class="soco-filter-btn active" data-rf="all">All</button>
+                            <button class="soco-filter-btn" data-rf="Critical">Critical</button>
+                            <button class="soco-filter-btn" data-rf="High">High</button>
+                            <button class="soco-filter-btn" data-rf="Medium">Medium</button>
+                            <button class="soco-filter-btn" data-rf="Quick Win">Quick Wins</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap"><table id="socoRecsTable">
+                        <thead><tr><th>#</th><th>Recommendation</th><th>Domain</th><th>Priority</th><th>Effort</th><th>Impact</th><th>Est. Saving</th><th>Status</th></tr></thead>
+                        <tbody></tbody>
+                    </table></div>
+                </div>
+
+                <!-- Row 4: Quick wins + process improvement timeline -->
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>⚡ Quick Wins</h3><span class="muted">High impact, low effort — implementable now</span></div>
+                        <div id="socoQuickWinList" class="soco-qw-list"></div>
+                    </div>
+                    <div class="card wide">
+                        <div class="card-head"><h3>Optimisation Roadmap</h3><span class="muted">Estimated savings uplift over 12 months</span></div>
+                        <div class="chart-box"><canvas id="socoRoadmapChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Row 5: Tool consolidation + skill gap -->
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>Tool Consolidation Opportunities</h3><span class="muted">Derived from integrations configured in this app</span></div>
+                        <div id="socoToolList" class="soco-tool-list"></div>
+                        <div class="chart-wrap" style="height:200px;margin-top:10px"><canvas id="socoToolChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>Analyst Skill Gap Analysis</h3></div>
+                        <div class="chart-box"><canvas id="socoSkillChart"></canvas></div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ============ RISK MANAGEMENT ============ -->
+            <section id="riskmanagement" class="panel">
+                <div id="xdRiskDashboard" class="xd-portal-dashboard"></div>
+                <div class="integ-settings-header">
+                    <div>
+                        <h2 class="integ-title-main">▥ Risk Management / CAB</h2>
+                        <p class="integ-subtitle">Production risk, CVE detection coverage, MTTR/SLA and tool ingestion status merged from the Claroty VPC dashboard copies.</p>
+                    </div>
+                    <div class="integ-summary"><span>Claroty xDome + OT risk correlation</span></div>
+                </div>
+                <div id="riskManagementHost"></div>
+            </section>
+
+            <!-- ============ API INTEGRATION SETTINGS ============ -->
+            <section id="integrations" class="panel">
+                <div class="integ-settings-header">
+                    <div>
+                        <h2 class="integ-title-main">⚙ Settings - Integrations</h2>
+                    </div>
+                    <div class="integ-summary">
+                        <span id="integ-configured-count">Loading integration settings…</span>
+                        <button class="ifc-btn save" onclick="INTEGRATIONS.render('integFormContainer'); INTEGRATIONS.updateConfiguredCount()">↺ Reload</button>
+                    </div>
+                </div>
+
+                <div class="settings-tabs" id="settingsTabs">
+                    <button class="settings-tab-btn active" data-settings-tab="integrations">🔑 Integrations</button>
+                    <button class="settings-tab-btn" data-settings-tab="moduledata">▤ Module Data</button>
+                    <button class="settings-tab-btn" data-settings-tab="users">👤 User Management</button>
+                    <button class="settings-tab-btn" data-settings-tab="profile">◉ Profile &amp; Exports</button>
+                </div>
+
+                <div id="settingsIntegrationsView" class="settings-view">
+                    <div id="integFormContainer"></div>
+                    <div class="card snort-engine-card" style="margin-top:16px;">
+                        <div class="card-head"><h3>Snort 3 Engine</h3><span id="snortEngineStatus" class="muted">Checking local engine…</span><button type="button" class="snort-collapse-toggle" data-snort-panel-toggle="snortEnginePanelBody" aria-controls="snortEnginePanelBody" aria-expanded="true">Minimize</button></div>
+                        <div id="snortEnginePanelBody" class="snort-panel-body">
+                        <p class="muted">Engine and rule-catalog status are separate. Snort is checked on PATH or via <code>SNORT_ENGINE_PATH</code>; Suricata is checked on PATH. This dashboard does not install an engine, start capture, or validate alerts.</p>
+                        <div class="snort-engine-stats">
+                            <div><span>Executable</span><strong id="snortEnginePath">Checking…</strong></div>
+                            <div><span>Suricata alternative</span><strong id="suricataEngineStatus">Checking…</strong></div>
+                            <div><span>Rule catalog</span><strong id="snortEngineRuleCount">Checking…</strong></div>
+                            <div><span>Runtime validation</span><strong id="snortEngineRuntime">Not run</strong></div>
+                        </div>
+                        <p class="muted"><a href="https://www.snort.org/downloads" target="_blank" rel="noopener noreferrer">Snort downloads</a> · <a href="https://www.gnu.org/" target="_blank" rel="noopener noreferrer">GNU</a></p>
+                        <details class="snort-registration-note">
+                            <summary>Snort website registration email notice</summary>
+                            <p>Registration on the website allows the site to send you several types of emails:</p>
+                            <ol>
+                                <li>Password reset and confirmation emails</li>
+                                <li>License expiration and credit card renewal emails</li>
+                                <li>Reminders that you are using an old version of the ruleset, or similar</li>
+                                <li>Notifications of system abuse</li>
+                            </ol>
+                        </details>
+                        </div>
+                    </div>
+                    <div class="card snort-engine-card" style="margin-top:16px;">
+                        <div class="card-head"><h3>Snort OpenAppID</h3><span id="openAppIdStatus" class="muted">Checking package…</span><button type="button" class="snort-collapse-toggle" data-snort-panel-toggle="openAppIdPanelBody" aria-controls="openAppIdPanelBody" aria-expanded="true">Minimize</button></div>
+                        <div id="openAppIdPanelBody" class="snort-panel-body">
+                        <p class="muted">OpenAppID is the Snort Open Detector Package (ODP): an application mapping table plus Lua detectors. The package is parsed and indexed locally. Application identification only happens inside a Snort sensor with packet capture — this dashboard has none, so no traffic is classified here.</p>
+                        <div class="snort-engine-stats">
+                            <div><span>ODP version</span><strong id="openAppIdVersion">Checking…</strong></div>
+                            <div><span>Applications</span><strong id="openAppIdApps">Checking…</strong></div>
+                            <div><span>Lua detectors</span><strong id="openAppIdDetectors">Checking…</strong></div>
+                            <div><span>Mapped to Snort names</span><strong id="openAppIdMapped">Checking…</strong></div>
+                        </div>
+                        <div class="snort-controls" style="margin-top:12px;">
+                            <button type="button" class="device-details-btn" id="openAppIdUpdateBtn"><i data-lucide="refresh-cw" aria-hidden="true"></i>Download latest ODP</button>
+                            <button type="button" class="device-details-btn" id="openAppIdImportBtn"><i data-lucide="upload" aria-hidden="true"></i>Import snort-openappid.tar.gz</button>
+                            <input type="file" id="openAppIdArchive" accept=".gz,.tgz,application/gzip" hidden>
+                            <input type="search" id="openAppIdSearch" placeholder="Search applications…" aria-label="Search OpenAppID applications">
+                        </div>
+                        <div class="table-wrap" style="margin-top:12px;"><table><thead><tr><th>App ID</th><th>Application</th><th>Snort name</th><th>Service</th><th>Client</th><th>Payload</th></tr></thead><tbody id="openAppIdRows"><tr><td colspan="6">Loading OpenAppID package…</td></tr></tbody></table></div>
+                        <p class="muted" id="openAppIdPageStatus"></p>
+                        <p class="muted"><a href="https://www.snort.org/downloads/#openappid" target="_blank" rel="noopener noreferrer">OpenAppID downloads</a> · verify the published MD5 before importing.</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:16px;">
+                        <div class="card-head"><h3>Security Tool Integration Inventory</h3><span class="muted">Single consolidated view for configured tools, workflows and live readiness</span></div>
+                        <div id="settingsToolInventory" class="integration-grid"></div>
+                    </div>
+                    <section class="card connected-tools-panel" aria-labelledby="connectedToolsTitle">
+                        <div class="card-head"><h3 id="connectedToolsTitle">Connected tool feeds</h3><button type="button" class="ifc-btn save" id="enableAllFeeds">Enable all available feeds</button></div>
+                        <p class="muted">Saved credentials alone do not verify a connection. Rubrik polling is controlled here; read-only GitHub, GitLab, MISP, Keycloak, OpenSearch, Wazuh Indexer, SentinelOne, Defender for Cloud Apps, Prisma Cloud, ONTAP, and Cato audit feeds can be synced from the SIEM Workbench. Other vendors can send events through enabled inbound connectors.</p>
+                        <div class="connected-tool-controls">
+                            <div class="connected-tool-row">
+                                <div><strong>Rubrik Security Cloud API</strong><span class="muted">Read-only workload and audit polling</span></div>
+                                <span id="rubrikFeedReadiness" class="ifc-status uncfg">Checking readiness…</span>
+                                <button type="button" class="feed-toggle" id="rubrikFeedToggle" role="switch" aria-checked="true" aria-label="Enable Rubrik API feed" disabled>Checking…</button>
+                            </div>
+                            <div id="otherFeedStatus" class="muted connected-tool-note"></div>
+                        </div>
+                        <div id="connectedConnectorFeeds" class="connected-connector-feeds" aria-live="polite"></div>
+                        <div id="connectedToolsStatus" role="status" aria-live="polite"></div>
+                    </section>
+                    <div class="card connector-manager" style="margin-top:16px;">
+                        <div class="card-head"><h3>Inbound Event Integrations</h3><span class="muted">Create and test local syslog, webhook, REST API, or custom JSON event endpoints</span></div>
+                        <p class="muted">Connector tokens are shown once. This dashboard listens on localhost only; remote senders need a secured local collector or reverse proxy. Syslog uses an HTTP bridge that accepts RFC 5424/3164 text. Rubrik accepts PD-CEF webhook notifications and maps safe alert fields into canonical events.</p>
+                        <section class="rubrik-live-panel" aria-labelledby="rubrikLiveTitle">
+                            <div class="rubrik-live-heading"><div><h4 id="rubrikLiveTitle">Rubrik Security Cloud live activity and audit events</h4><p>Read-only workload activity and user-audit records from Rubrik's GraphQL API. Refreshes every 60 seconds while this Settings view is open and automatically routes identifiable records to matching modules.</p></div><div class="rubrik-live-actions"><button type="button" class="ifc-btn test" id="rubrikLiveRefresh">Refresh now</button><button type="button" class="ifc-btn test" id="rubrikLiveLoadMore" hidden>Load more results</button></div></div>
+                            <div id="rubrikLiveStatus" role="status" aria-live="polite">Loading live activity…</div>
+                            <div class="table-wrap"><table><thead><tr><th>Updated</th><th>Class</th><th>Activity / message</th><th>Status / severity</th><th>Source</th><th>Device / object</th><th>Path</th><th>IOC</th><th>Module routing</th><th>Details</th></tr></thead><tbody id="rubrikLiveRows"><tr><td colspan="10">Loading Rubrik activity…</td></tr></tbody></table></div>
+                        </section>
+                        <section class="integration-event-log" aria-labelledby="integrationEventLogTitle">
+                            <div class="rubrik-live-heading"><div><h4 id="integrationEventLogTitle">Inbound and normalized integration logs</h4><p>Latest accepted events include source, device/resource, request path, indicators and the modules they were routed to. Missing source fields are shown as not reported.</p></div><button type="button" class="ifc-btn test" id="integrationEventRefresh">Refresh logs</button></div>
+                            <div id="integrationEventStatus" role="status" aria-live="polite">Loading integration logs…</div>
+                            <div class="table-wrap"><table><thead><tr><th>Event time</th><th>Type</th><th>Source</th><th>Device / resource</th><th>Path</th><th>IOC</th><th>Routing</th><th>Full event</th></tr></thead><tbody id="integrationEventRows"><tr><td colspan="8">Loading integration events…</td></tr></tbody></table></div>
+                        </section>
+                        <form id="connectorCreateForm" class="connector-create-form">
+                            <label>Integration name<input id="connectorName" type="text" maxlength="100" required placeholder="e.g. Microsoft Sentinel"></label>
+                            <label>Transport<select id="connectorTransport"><option value="syslog">Syslog (RFC 5424/3164 over HTTP)</option><option value="wazuh">Wazuh alerts (JSON adapter)</option><option value="idnomic">IDnomic/OpenTrust CMS (JSON mapping)</option><option value="rubrik">Rubrik Security Cloud (PD-CEF webhook)</option><option value="webhook">Webhook (JSON)</option><option value="api">REST API (JSON)</option><option value="other">Other (canonical JSON)</option></select></label>
+                            <button type="submit" class="ifc-btn save">Create integration</button>
+                        </form>
+                        <div id="connectorCreated" class="connector-created" hidden></div>
+                        <div id="connectorStatus" role="status" aria-live="polite"></div>
+                        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Method</th><th>Endpoint</th><th>Events received</th><th>Last received</th><th></th></tr></thead><tbody id="connectorRows"><tr><td colspan="6">Loading integrations…</td></tr></tbody></table></div>
+                    </div>
+                </div>
+
+                <div id="settingsModuleDataView" class="settings-view" hidden>
+                    <div class="module-data-workbench">
+                        <div class="module-data-heading">
+                            <div><h2>Persisted module records</h2><p>Local server storage · secret fields are rejected · empty modules stay empty until data is entered or connected.</p></div>
+                            <button type="button" id="refreshModuleData" class="topbar-tool-btn">Refresh</button>
+                        </div>
+                        <div class="module-data-controls">
+                            <label>Module<select id="moduleDataSelect"></select></label>
+                            <label>Search<input id="moduleDataSearch" type="search" placeholder="Search current module records"></label>
+                            <button type="button" id="newModuleRecord" class="topbar-tool-btn">New record</button>
+                        </div>
+                        <p id="moduleDataStatus" role="status" aria-live="polite"></p>
+                        <div class="module-data-editor">
+                            <label for="moduleDataJson">Record JSON</label>
+                            <textarea id="moduleDataJson" rows="8" spellcheck="false" placeholder='{"title":"Example record","status":"open"}'></textarea>
+                            <div><button type="button" id="saveModuleRecord" class="xd-command">Create record</button><button type="button" id="cancelModuleRecord" class="topbar-tool-btn">Cancel</button></div>
+                        </div>
+                        <div class="module-data-table-wrap"><table><thead><tr><th>ID</th><th>Summary</th><th>Updated</th><th>Actions</th></tr></thead><tbody id="moduleDataRows"></tbody></table></div>
+                    </div>
+                </div>
+
+                <div id="settingsUsersView" class="settings-view" hidden>
+                    <div class="kpi-grid four">
+                        <div class="kpi-card sm"><div class="kpi-label">Active Users</div><div class="kpi-value" id="umActiveUsers">6</div><div class="kpi-sub">OT Platform users</div></div>
+                        <div class="kpi-card sm"><div class="kpi-label">Admins</div><div class="kpi-value" id="umAdmins">2</div><div class="kpi-sub">Privileged access</div></div>
+                        <div class="kpi-card sm"><div class="kpi-label">MFA Coverage</div><div class="kpi-value" id="umMfa">100<small>%</small></div><div class="kpi-sub">Required for all roles</div></div>
+                        <div class="kpi-card sm"><div class="kpi-label">Pending Reviews</div><div class="kpi-value" id="umReviews">1</div><div class="kpi-sub">Access recertification</div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>User Management</h3><span class="muted">Role-based access for OT Platform operations</span></div>
+                        <div class="table-wrap">
+                            <table id="userMgmtTable">
+                                <thead><tr><th>User</th><th>Role</th><th>Scope</th><th>MFA</th><th>Status</th><th>Last Active</th></tr></thead>
+                                <tbody>
+                                    <tr><td><strong>ot.admin</strong></td><td>Platform Admin</td><td>All plants</td><td><span class="pill green">Enabled</span></td><td><span class="pill green">Active</span></td><td>Today</td></tr>
+                                    <tr><td><strong>plant.lead</strong></td><td>Plant Lead</td><td>Stuttgart / Pune</td><td><span class="pill green">Enabled</span></td><td><span class="pill green">Active</span></td><td>Today</td></tr>
+                                    <tr><td><strong>ot.analyst</strong></td><td>OT Analyst</td><td>Device coverage, vulnerabilities</td><td><span class="pill green">Enabled</span></td><td><span class="pill green">Active</span></td><td>Today</td></tr>
+                                    <tr><td><strong>risk.manager</strong></td><td>Risk Manager</td><td>Risk Management / CAB</td><td><span class="pill green">Enabled</span></td><td><span class="pill amber">Review</span></td><td>Yesterday</td></tr>
+                                    <tr><td><strong>auditor.readonly</strong></td><td>Auditor</td><td>Read-only dashboards</td><td><span class="pill green">Enabled</span></td><td><span class="pill green">Active</span></td><td>2 days ago</td></tr>
+                                    <tr><td><strong>api.service</strong></td><td>Service Account</td><td>Backend collectors</td><td><span class="pill green">Certificate</span></td><td><span class="pill green">Active</span></td><td>Continuous</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settingsProfileView" class="settings-view" hidden>
+                    <div id="xdProfileDashboard" class="xd-portal-dashboard"></div>
+                </div>
+
+                <div id="integRiskView" hidden>
+                    <div class="pri-subtabs" id="priSubtabs">
+                        <button class="pri-subtab-btn active" data-pritab="exec">Executive Risk</button>
+                        <button class="pri-subtab-btn" data-pritab="corr">Correlation Matrix</button>
+                        <button class="pri-subtab-btn" data-pritab="mttr">MTTR &amp; SLA</button>
+                        <button class="pri-subtab-btn" data-pritab="heat">Risk Heatmap</button>
+                        <button class="pri-subtab-btn" data-pritab="integ">Tool Integrations</button>
+                    </div>
+
+                    <!-- Executive Production Risk -->
+                    <div class="pri-view" id="priView-exec">
+                        <div class="kpi-grid" id="priExecKpis"></div>
+                        <div class="chart-row">
+                            <div class="card wide">
+                                <div class="card-head"><h3>Risk Score Trend</h3><span class="muted">Quarterly trend across the production estate</span></div>
+                                <div class="chart-box"><canvas id="priRiskTrendChart"></canvas></div>
+                            </div>
+                            <div class="card">
+                                <div class="card-head"><h3>Findings by Severity</h3></div>
+                                <div class="chart-box"><canvas id="priSeverityChart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="card wide">
+                                <div class="card-head"><h3>Findings by Tool</h3><span class="muted">Stacked by severity</span></div>
+                                <div class="chart-box"><canvas id="priToolStackChart"></canvas></div>
+                            </div>
+                            <div class="card">
+                                <div class="card-head"><h3>Revenue at Risk</h3><span class="muted">€ / day exposure per plant</span></div>
+                                <div class="chart-box"><canvas id="priRevenueChart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-head"><h3>Top Risk Production Assets</h3><span class="muted">Risk = CVSS×0.25 + Criticality×0.25 + Impact×0.20 + Exploitability×0.10 + Aging×0.10 + Exposure×0.10</span></div>
+                            <div class="table-wrap">
+                                <table id="priAssetsTable">
+                                    <thead><tr><th>Asset</th><th>Plant</th><th>Type</th><th>CVE</th><th>Risk Score</th><th>Status</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Findings Correlation Matrix -->
+                    <div class="pri-view" id="priView-corr" hidden>
+                        <div class="card" style="margin-bottom:16px;">
+                            <div class="card-head"><h3>CVE Detection Coverage Matrix</h3><span class="muted">Confidence = (tools detected ÷ total tools) × 100 · Claroty vs Nessus, BMC, Trellix, CrowdStrike, PITS</span></div>
+                            <div class="table-wrap">
+                                <table id="priCorrTable">
+                                    <thead><tr id="priCorrHead"></tr></thead>
+                                    <tbody id="priCorrBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="card wide">
+                                <div class="card-head"><h3>Detection Coverage by Tool</h3></div>
+                                <div class="chart-box"><canvas id="priCoverageChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MTTR & SLA Analytics -->
+                    <div class="pri-view" id="priView-mttr" hidden>
+                        <div class="kpi-grid four" id="priMttrKpis"></div>
+                        <div class="chart-row">
+                            <div class="card wide">
+                                <div class="card-head"><h3>MTTR Trend</h3><span class="muted">All assets vs critical OT assets · 6 months</span></div>
+                                <div class="chart-box"><canvas id="priMttrTrendChart"></canvas></div>
+                            </div>
+                            <div class="card">
+                                <div class="card-head"><h3>MTTR vs SLA Target</h3><span class="muted">By severity</span></div>
+                                <div class="chart-box"><canvas id="priMttrSlaChart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-head"><h3>Remediation Tickets</h3></div>
+                            <div class="table-wrap">
+                                <table id="priTicketsTable">
+                                    <thead><tr><th>Ticket</th><th>Asset</th><th>Severity</th><th>Opened</th><th>SLA Target</th><th>Resolution</th><th>Status</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Production Risk Heatmap -->
+                    <div class="pri-view" id="priView-heat" hidden>
+                        <div class="card" style="margin-bottom:16px;">
+                            <div class="card-head">
+                                <h3>Production Risk Heatmap</h3>
+                                <span class="muted">Live xDome sites × device risk level · cell value = device count (click to list devices)</span>
+                                <div class="pri-heat-legend">
+                                    <span><i class="pri-sw crit"></i> Critical</span>
+                                    <span><i class="pri-sw high"></i> High</span>
+                                    <span><i class="pri-sw med"></i> Medium</span>
+                                    <span><i class="pri-sw low"></i> Low / Very Low</span>
+                                </div>
+                            </div>
+                            <p class="muted" id="priHeatNote"></p>
+                            <div class="heatmap-wrap"><div id="priHeatmapGrid" class="pri-heatmap-grid"></div></div>
+                        </div>
+                        <div class="chart-row">
+                            <div class="card">
+                                <div class="card-head"><h3>Devices by Site</h3><span class="muted">Top 12 sites by device count</span></div>
+                                <div class="chart-box"><canvas id="priPlantRevenueChart"></canvas></div>
+                            </div>
+                            <div class="card">
+                                <div class="card-head"><h3>Critical &amp; High Devices by Site</h3><span class="muted">Top 12 sites by critical count</span></div>
+                                <div class="chart-box"><canvas id="priPlantRiskChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tool Integration Status -->
+                    <div class="pri-view" id="priView-integ" hidden>
+                        <div id="priIntegGrid" class="integration-grid"></div>
+                        <div class="chart-row" style="margin-top:16px">
+                            <div class="card wide">
+                                <div class="card-head"><h3>Data Ingestion Volume</h3><span class="muted">Assets + findings ingested per tool (last sync)</span></div>
+                                <div class="chart-box"><canvas id="priIngestChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ INCIDENT GRAPH ============ -->
+            <section id="offsec" class="panel">
+                <div class="page-head">
+                    <div>
+                        <h2>Offensive Security Assessment</h2>
+                        <p class="muted">Evidence-based offensive assessment built from the live Claroty xDome estate, the loaded Snort rule catalogue and the open threat feeds. This platform has no scanning engine and no authorized-target list, so nothing here is exploited or actively probed.</p>
+                    </div>
+                    <button type="button" id="offsecRefresh" class="device-details-btn">Run assessment</button>
+                </div>
+                <div class="public-feed-status" id="offsecStatus">Not run yet.</div>
+
+                <div class="kpi-grid five" id="offsecKpis" hidden>
+                    <div class="kpi-card sm"><div class="kpi-label">Critical Attack Paths</div><div class="kpi-value" id="offsecCritPaths">0</div><div class="kpi-sub">KEV-backed, score ≥ 80</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Ransomware-Exposed Assets</div><div class="kpi-value" id="offsecRansom">0</div><div class="kpi-sub">CISA ransomware campaign use</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">ATT&amp;CK Tactics Covered</div><div class="kpi-value" id="offsecTactics">0</div><div class="kpi-sub">From loaded Snort rules</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Detection Gaps</div><div class="kpi-value" id="offsecGaps">0</div><div class="kpi-sub">Observed technique, no rule</div></div>
+                    <div class="kpi-card sm"><div class="kpi-label">Domains With Evidence</div><div class="kpi-value" id="offsecDomains">0</div><div class="kpi-sub">Of the methodology domains</div></div>
+                </div>
+
+                <div class="card">
+                    <h3>Attack Paths — live asset exposure</h3>
+                    <p class="muted" id="offsecPathMethod">Scored from loaded xDome assets with known-exploited CVEs.</p>
+                    <div class="table-wrap">
+                        <table id="offsecPathTable">
+                            <thead><tr><th>Asset</th><th>Site / Type</th><th>Score</th><th>KEV CVEs</th><th>Attack chain</th></tr></thead>
+                            <tbody><tr><td colspan="5">Run the assessment to populate attack paths.</td></tr></tbody>
+                        </table>
+                    </div>
+                    <button type="button" id="offsecPathMore" class="device-details-btn" hidden>Load more paths</button>
+                </div>
+
+                <div class="card">
+                    <h3>MITRE ATT&amp;CK Coverage — loaded detection rules</h3>
+                    <p class="muted" id="offsecCoverageMethod"></p>
+                    <div class="chart-box"><canvas id="offsecCoverageChart"></canvas></div>
+                    <div class="table-wrap">
+                        <table id="offsecCoverageTable">
+                            <thead><tr><th>Tactic</th><th>Rules</th><th>Enabled</th><th>Technique-level refs</th><th>Status</th></tr></thead>
+                            <tbody><tr><td colspan="5">Run the assessment to map coverage.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Purple Team — detection validation</h3>
+                    <p class="muted" id="offsecPurpleMethod">Observed ATT&amp;CK techniques from live xDome alerts, checked against loaded rule coverage.</p>
+                    <div class="table-wrap">
+                        <table id="offsecPurpleTable">
+                            <thead><tr><th>Technique</th><th>Tactic</th><th>Observed</th><th>Coverage</th><th>Detail</th></tr></thead>
+                            <tbody><tr><td colspan="5">Run the assessment to validate detections.</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Methodology Domains</h3>
+                    <p class="muted" id="offsecLimits"></p>
+                    <div class="table-wrap">
+                        <table id="offsecDomainTable">
+                            <thead><tr><th>Domain</th><th>Objective</th><th>Potential evidence sources</th><th>Requires authorized testing</th><th>Evidence / validation / assessment</th></tr></thead>
+                            <tbody><tr><td colspan="5">Run the assessment to evaluate domains.</td></tr></tbody>
+                        </table>
+                    </div>
+                    <p class="muted" id="offsecKpiNote"></p>
+                </div>
+            </section>
+
+            <section id="incgraph" class="panel">
+                <!-- Toolbar -->
+                <div class="ig-toolbar">
+                    <div class="ig-title-block">
+                        <h2 class="ig-main-title">🕸 Incident Graph Explorer</h2>
+                        <p class="ig-subtitle">Force-directed entity graph — nodes by type · edges by relationship · click to investigate</p>
+                    </div>
+                    <div class="ig-toolbar-right">
+                        <select id="igIncidentSelect" class="af-select">
+                            <option value="INC-4901">INC-4901 · Ransomware (Critical)</option>
+                            <option value="INC-4887">INC-4887 · Phishing Campaign (High)</option>
+                            <option value="INC-4930">INC-4930 · C2 Beaconing (High)</option>
+                            <option value="INC-4923">INC-4923 · Lateral Movement (Critical)</option>
+                        </select>
+                        <button class="ifc-btn save" id="igGroupBtn">⬡ Group by Type</button>
+                        <button class="ifc-btn" id="igResetBtn">↺ Reset</button>
+                        <button class="ifc-btn test" id="igFullscreenBtn">⛶ Expand</button>
+                    </div>
+                </div>
+
+                <!-- Entity type legend -->
+                <div class="ig-legend" id="igLegend"></div>
+
+                <!-- Main graph + detail panel -->
+                <div class="ig-body">
+                    <div class="ig-canvas-wrap" id="igCanvasWrap">
+                        <canvas id="igCanvas"></canvas>
+                        <div class="ig-tooltip" id="igTooltip" hidden></div>
+                        <div class="ig-controls">
+                            <button class="ig-ctrl-btn" id="igZoomIn" title="Zoom in">+</button>
+                            <button class="ig-ctrl-btn" id="igZoomOut" title="Zoom out">−</button>
+                            <button class="ig-ctrl-btn" id="igFit" title="Fit to view">⊡</button>
+                        </div>
+                    </div>
+                    <div class="ig-detail-panel" id="igDetailPanel">
+                        <div class="ig-detail-hint" id="igDetailHint">
+                            <div class="ig-hint-icon">👆</div>
+                            <p>Click any node to see entity details, related alerts, and investigation options</p>
+                        </div>
+                        <div class="ig-detail-content" id="igDetailContent" hidden></div>
+                    </div>
+                </div>
+
+                <!-- Attack Story + Assets row -->
+                <div class="chart-row" style="margin-top:16px">
+                    <div class="card wide">
+                        <div class="card-head"><h3>⚔ Attack Story</h3><span class="muted">Reconstructed attack chain from correlated alerts</span></div>
+                        <div class="ig-attack-story" id="igAttackStory"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head"><h3>🖥 Affected Assets</h3></div>
+                        <div class="ig-assets-list" id="igAssetsList"></div>
+                    </div>
+                </div>
+
+                <!-- Similar Incidents + Alert Activities row -->
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-head"><h3>🔗 Similar Incidents</h3><span class="muted">Matched by category, IOC, or MITRE technique</span></div>
+                        <div class="ig-similar-list" id="igSimilarList"></div>
+                    </div>
+                    <div class="card wide">
+                        <div class="card-head"><h3>📋 Alert Activities</h3><span class="muted">Correlated alert timeline for this incident</span></div>
+                        <div class="ig-activities" id="igActivities"></div>
+                    </div>
+                </div>
+
+                <!-- Investigation Summary -->
+                <div class="card" style="margin-top:0">
+                    <div class="card-head">
+                        <h3>🔍 Investigation Summary</h3>
+                        <span class="muted">Auto-generated from graph analysis · update with your findings</span>
+                        <button class="ifc-btn save" id="igSummaryExport" style="margin-left:auto">📄 Export Summary</button>
+                    </div>
+                    <div class="ig-summary-body" id="igSummaryBody"></div>
+                </div>
+            </section>
+
+            <!-- ============ DOCUMENTATION ============ -->
+            <section id="docs" class="panel">
+                <div class="integ-settings-header">
+                    <div>
+                        <h2 class="integ-title-main">📘 Documentation</h2>
+                        <p class="integ-subtitle">Architecture, tabs, formulas, APIs and integration reference for this OT Platform.</p>
+                    </div>
+                    <div class="integ-summary">
+                        <a class="ifc-btn save" href="README.md" target="_blank" rel="noopener">📄 Open README.md</a>
+                    </div>
+                </div>
+
+                <div class="docs-toc" id="docsToc">
+                    <a href="#doc-overview">Overview</a>
+                    <a href="#doc-run">Running the App</a>
+                    <a href="#doc-structure">File Structure</a>
+                    <a href="#doc-tabs">Tabs Reference</a>
+                    <a href="#doc-formulas">Formulas</a>
+                    <a href="#doc-api">Server API</a>
+                    <a href="#doc-client-api">Client Data Layer</a>
+                    <a href="#doc-integrations">Integrations</a>
+                    <a href="#doc-risk">Production Risk Intelligence</a>
+                    <a href="#doc-troubleshoot">Troubleshooting</a>
+                </div>
+
+                <div class="card" id="doc-overview">
+                    <div class="card-head"><h3>Overview</h3></div>
+                    <p class="docs-p">A single-page OT Platform: Claroty xDome device coverage, vulnerability analytics, risk management, threat intel enrichment, automation ROI, integrations, playbooks, an executive scorecard, a live alert feed, a geo threat map, SLA tracking, OT optimization, Settings - Integrations, User Management, and an incident graph explorer. Claroty xDome is the primary live OT data source.</p>
+                </div>
+
+                <div class="card" id="doc-run">
+                    <div class="card-head"><h3>Running the App</h3></div>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>Step</th><th>Command</th></tr></thead>
+                        <tbody>
+                            <tr><td>Start the server</td><td><code>py server.py</code> (serves on http://127.0.0.1:8080)</td></tr>
+                            <tr><td>Open the dashboard</td><td>Navigate to <code>http://127.0.0.1:8080/</code></td></tr>
+                            <tr><td>Claroty live data</td><td>Configure encrypted Claroty credentials in Settings. The dashboard loads Devices Covered / Vulnerabilities / Risk Management automatically.</td></tr>
+                            <tr><td>Health check</td><td><code>GET /api/health</code></td></tr>
+                        </tbody>
+                    </table></div>
+                </div>
+
+                <div class="card" id="doc-structure">
+                    <div class="card-head"><h3>File Structure</h3></div>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>index.html</code></td><td>Layout, sidebar nav, all panel markup</td></tr>
+                            <tr><td><code>styles.css</code></td><td>Dark/light cyber theme, all component styles</td></tr>
+                            <tr><td><code>config.js</code></td><td>Swimlane connection config (demo-mode by default)</td></tr>
+                            <tr><td><code>api.js</code></td><td>SwimlaneAPI client — live fetch with automatic mock fallback</td></tr>
+                            <tr><td><code>reports.js</code></td><td>CSV parsing + incident classification engine</td></tr>
+                            <tr><td><code>integrations.js</code></td><td>Encrypted vendor credential forms and integration visibility controls</td></tr>
+                            <tr><td><code>production-risk.js</code></td><td>Production Risk Intelligence tab (exec risk, correlation, MTTR/SLA, heatmap, tool status)</td></tr>
+                            <tr><td><code>app.js</code></td><td>Navigation, charts, drill-downs, AI modal, notifications, exports</td></tr>
+                            <tr><td><code>server.py</code></td><td>Python stdlib HTTP server + JSON API (alerts, incidents, public feeds)</td></tr>
+                            <tr><td><code>data/claroty_credentials.enc</code></td><td>Encrypted Claroty credential store used by backend live-data routes</td></tr>
+                        </tbody>
+                    </table></div>
+                </div>
+
+                <div class="card" id="doc-tabs">
+                    <div class="card-head"><h3>Tabs Reference</h3></div>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>Tab</th><th>What it shows</th></tr></thead>
+                        <tbody>
+                            <tr><td>Overview</td><td>Core KPIs, incident trend, severity mix, 52-week activity heatmap</td></tr>
+                            <tr><td>OT Operations</td><td>Analyst productivity, false-positive reduction, closure rate, correlation timeline</td></tr>
+                            <tr><td>Threat Analytics</td><td>MITRE ATT&amp;CK mapping/coverage matrix, high-risk users, vulnerability aging</td></tr>
+                            <tr><td>Threat Intel</td><td>Public CVE/KEV feeds, universal IOC enrichment search, source catalog</td></tr>
+                            <tr><td>Insider Threat</td><td>UBA risk KPIs, behavioral anomalies, exfiltration signals</td></tr>
+                            <tr><td>Automation</td><td>Playbook execution success, hours saved by use case</td></tr>
+                            <tr><td>Automation ROI</td><td>Interactive ROI calculator, cumulative cost avoidance, targets table</td></tr>
+                            <tr><td>SIEM Integrations</td><td>Alert reduction funnel, events processed by platform</td></tr>
+                            <tr><td>Playbooks</td><td>Phishing response workflow diagram, use-case playbook table</td></tr>
+                            <tr><td>Exec Scorecard</td><td>OT maturity radar, KPI RAG scorecard, executive outcomes</td></tr>
+                            <tr><td>Live Alert Feed</td><td>Real-time ticker backed by <code>/api/alerts</code>, rate + severity charts</td></tr>
+                            <tr><td>Threat Map</td><td>Geo threat origin bubbles, attack type by region, volume timeline</td></tr>
+                            <tr><td>SLA Tracker</td><td>Breach/at-risk/on-track KPIs with AI-assisted investigation</td></tr>
+                            <tr><td>OT Optimization</td><td>Maturity radar, benchmark comparison, prioritised recommendations, roadmap</td></tr>
+                            <tr><td>Settings - Integrations</td><td>Credential forms for 29 tools, visibility filters, security-tool inventory and User Management</td></tr>
+                            <tr><td>Incident Graph</td><td>Force-directed entity graph, attack story, similar incidents</td></tr>
+                        </tbody>
+                    </table></div>
+                </div>
+
+                <div class="card" id="doc-formulas">
+                    <div class="card-head"><h3>Key Formulas</h3></div>
+                    <div class="formula-note" style="display:flex;flex-direction:column;gap:8px;">
+                        <code>Production Risk Score = CVSS×0.25 + Criticality×0.25 + Impact×0.20 + Exploitability×0.10 + Aging×0.10 + Exposure×0.10</code>
+                        <code>Detection Confidence = (Tools that detected CVE ÷ Total tools compared) × 100</code>
+                        <code>MTTR = SUM(Resolution Days) ÷ COUNT(Closed Tickets)</code>
+                        <code>SLA Breach % = Breached Incidents ÷ Total Incidents × 100</code>
+                        <code>Hours Saved = (Incidents × Manual min − Incidents × Processing min) ÷ 60</code>
+                        <code>FTE Savings = Hours Saved × 12 ÷ (160 × 12) → Cost Avoidance = FTE × Annual Analyst Cost</code>
+                    </div>
+                </div>
+
+                <div class="card" id="doc-api">
+                    <div class="card-head"><h3>Server API (server.py)</h3></div>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/api/health</code></td><td>GET</td><td>Liveness check</td></tr>
+                            <tr><td><code>/api/incidents</code></td><td>GET</td><td>Classified incidents from the sample CSV (filters: <code>range</code>, <code>severity</code>, <code>status</code>, <code>limit</code>)</td></tr>
+                            <tr><td><code>/api/dashboard</code></td><td>GET</td><td>Aggregated KPI summary over the sample CSV</td></tr>
+                            <tr><td><code>/api/alerts</code></td><td>GET</td><td>Rolling live alert queue for the Live Alert Feed tab</td></tr>
+                            <tr><td><code>/api/alerts/{id}/actions</code></td><td>POST</td><td>Acknowledge / own / escalate an alert (<code>{"action": "..."}</code>)</td></tr>
+                            <tr><td><code>/api/public-feeds</code></td><td>GET</td><td>Aggregates CISA KEV, NVD, MSRC, Feodo Tracker, FIRST EPSS, and CIRCL CVE-Search (15-min cache)</td></tr>
+                            <tr><td><code>/api/threat-intel/feeds</code></td><td>GET</td><td>Local status and counts for indexed IP, domain, MD5, SHA-1 and SHA-256 feeds</td></tr>
+                            <tr><td><code>/api/threat-intel/feeds/refresh</code></td><td>POST</td><td>Refresh public indicators into the local SQLite index; does not block or enforce</td></tr>
+                            <tr><td><code>/api/zero-trust/detections</code></td><td>GET</td><td>Evaluate local event rules, including malicious feed matches, over a bounded lookback window</td></tr>
+                            <tr><td><code>/api/threat-intel/lookup</code></td><td>GET</td><td>Exact-match an IP, domain, or file hash against the local indicator index</td></tr>
+                            <tr><td><code>/api/siem/dashboard</code></td><td>GET</td><td>Local event/source summary, audit-framework evidence, ATT&amp;CK catalogue coverage, feed health, and engine readiness</td></tr>
+                            <tr><td><code>/api/siem/events</code></td><td>GET</td><td>Search local events with safe KQL-style source, severity, type, device, IOC and text filters</td></tr>
+                            <tr><td><code>/api/osint/framework</code></td><td>GET</td><td>OSINT discipline catalogue: categories, subcategories, techniques, accepted inputs and access tiers</td></tr>
+                            <tr><td><code>/api/osint/search</code></td><td>GET</td><td>Filter OSINT techniques by text, category, starting input type, or access tier</td></tr>
+                            <tr><td><code>/api/osint/pivot</code></td><td>POST</td><td>Classify an observable, run this platform's own indicator, exposure and sighting checks, and list remaining manual techniques</td></tr>
+                            <tr><td><code>/api/modules/osint_workspace</code></td><td>GET/POST/PUT/DELETE</td><td>Persist OSINT bookmarks and investigation notes locally</td></tr>
+                            <tr><td><code>/api/integrations/feed-state</code></td><td>GET/POST</td><td>Read or toggle implemented Rubrik API polling</td></tr>
+                            <tr><td><code>/api/integrations/api-feeds/refresh</code></td><td>POST</td><td>Manually poll configured read-only GitHub, GitLab, MISP, Keycloak, OpenSearch, Wazuh Indexer, SentinelOne, Defender for Cloud Apps, Prisma Cloud, ONTAP, and Cato audit feeds</td></tr>
+                            <tr><td><code>/api/integrations/connectors/{id}/enabled</code></td><td>POST</td><td>Enable or pause an inbound event connector</td></tr>
+                            <tr><td><code>/api/v1/security-assessment/summary</code></td><td>GET</td><td>Assessment rollup; unmeasured active testing is null, not zero</td></tr>
+                            <tr><td><code>/api/v1/security-assessment/domains</code></td><td>GET</td><td>Per-domain passive evidence, validation state and deferred metrics</td></tr>
+                            <tr><td><code>/api/v1/security-assessment/domains/{domainId}</code></td><td>GET</td><td>Domain evidence sources and testing requests</td></tr>
+                            <tr><td><code>/api/v1/security-assessment/domains/{domainId}/testing</code></td><td>POST</td><td>Record an unverified testing request only; does not authorize, run tests or validate controls</td></tr>
+                        </tbody>
+                    </table></div>
+                </div>
+
+                <div class="card" id="doc-client-api">
+                    <div class="card-head"><h3>Client Data Layer</h3></div>
+                    <p class="docs-p"><strong>SwimlaneAPI</strong> (<code>api.js</code>) — wraps the Swimlane REST API. Every method returns <code>{ data, source }</code> where <code>source</code> is <code>"live"</code> or <code>"mock"</code>; it automatically falls back to a deterministic mock incident pool if <code>USE_LIVE</code> is off, credentials are missing, or the request fails/times out.</p>
+                    <p class="docs-p"><strong>Reports</strong> (<code>reports.js</code>) — parses an imported CSV, classifies each row into category/severity/automation via regex rules, and produces the same aggregate shape the charts expect.</p>
+                    <p class="docs-p"><strong>INTEGRATIONS</strong> (<code>integrations.js</code>) — stores vendor credentials in encrypted backend storage; the browser receives safe status metadata only. GitHub, GitLab, MISP, Keycloak, OpenSearch, Wazuh Indexer, SentinelOne, Defender for Cloud Apps, Prisma Cloud, and NetApp ONTAP have manual read-only API sync; most other vendor cards remain settings-only.</p>
+                </div>
+
+                <div class="card" id="doc-integrations">
+                    <div class="card-head"><h3>Integrations</h3></div>
+                    <p class="docs-p">29 tools are configurable under <strong>Settings - Integrations</strong>. Eleven read-only API feeds can be synced manually from the SIEM Workbench; the remaining vendor cards are settings-only or require a provider-specific API contract. Hide/search/filter controls only change this browser's view; they do not clear credentials. Rubrik/Cato events can use the local webhook receiver. Cato events sync read-only; DC2Cloud appears in Zero Trust readiness, but live telemetry and policy enforcement remain disconnected until its connector is implemented and tested.</p>
+                </div>
+
+                <div class="card" id="doc-risk">
+                    <div class="card-head"><h3>Production Risk Intelligence</h3></div>
+                    <p class="docs-p">Under <strong>Risk Management</strong>: an executive risk view, a CVE detection correlation matrix (Claroty vs Nessus/BMC/Trellix/CrowdStrike/PITS), MTTR &amp; SLA analytics, a plant × production-line risk heatmap, and a status grid for all 11 OT/IT security tools (Claroty, Swimlane, CrowdStrike, Defender, Azure, Wiz, Sentinel, Nessus, Trellix, BMC, PITS).</p>
+                </div>
+
+                <div class="card" id="doc-troubleshoot">
+                    <div class="card-head"><h3>Troubleshooting</h3></div>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+                        <tbody>
+                            <tr><td>Blank charts on a tab</td><td>Chart.js needs a visible canvas — charts render/resize on first tab activation; switch tabs once</td></tr>
+                            <tr><td>Claroty live data not loading</td><td>Open Settings - Integrations and confirm Claroty credentials are configured on this backend.</td></tr>
+                            <tr><td>Import fails</td><td>Ensure the CSV has <code>Tracking Id</code>, <code>Case Status</code>, <code>BMC Incident Title</code> columns</td></tr>
+                            <tr><td>Public feeds show errors</td><td>Requires outbound internet access to CISA/NVD/MSRC/URLhaus; failures are caught per-source and shown individually</td></tr>
+                            <tr><td>Port already in use</td><td>Stop the other process on 8080 or edit <code>PORT</code> in <code>server.py</code></td></tr>
+                        </tbody>
+                    </table></div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ============ AI INVESTIGATION MODAL ============ -->
+    <div class="ai-modal" id="aiModal" hidden aria-hidden="true" aria-modal="false" aria-labelledby="aiModalTitle" role="dialog">
+        <div class="ai-modal-head">
+            <div class="ai-modal-title-row">
+                <span class="ai-brain">🤖</span>
+                <div>
+                    <h3 id="aiModalTitle">AI Investigation</h3>
+                    <span class="muted" id="aiModalSub">Automated triage &amp; response plan</span>
+                </div>
+                <button type="button" class="ai-modal-close" id="aiModalClose" aria-label="Close draft popup">✕</button>
+            </div>
+        </div>
+        <div class="ai-modal-body" id="aiModalBody"></div>
+    </div>
+
+    <!-- ============ DRILL-DOWN DRAWER ============ -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <aside class="drawer" id="drawer" aria-hidden="true">
+        <div class="drawer-head">
+            <div>
+                <h3 id="drawerTitle">Records</h3>
+                <span class="muted" id="drawerSub"></span>
+            </div>
+            <button class="drawer-close" id="drawerClose" aria-label="Close">✕</button>
+        </div>
+        <div class="drawer-body" id="drawerBody"></div>
+    </aside>
+
+    <script src="session-recovery.js?v=1"></script>
+    <script src="config.js?v=2"></script>
+    <script src="api.js?v=8"></script>
+    <script src="claroty.js?v=15"></script>
+    <script src="reports.js?v=2"></script>
+    <script src="integrations.js?v=17"></script>
+    <script src="integration-connectors.js?v=9"></script>
+    <script src="xdome-modules.js?v=15"></script>
+    <script src="production-risk.js?v=8"></script>
+    <script src="xdome-portal.js?v=48"></script>
+    <script src="zero-trust.js?v=15"></script>
+    <script src="incidents.js?v=1"></script>
+    <script src="app.js?v=81"></script>
+    <script src="soc-studio.js?v=3"></script>
+</body>
+</html>
